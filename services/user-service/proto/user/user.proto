@@ -1,0 +1,20 @@
+syntax = "proto3";
+option go_package = "user-service/protogen/golang/user";
+
+message User {
+    uint64 user_id = 1 [json_name = "user_id"];
+    string name = 2 [json_name = "name"];
+    string email = 3 [json_name = "email"];
+}
+
+message GetUserRequest {
+    uint64 user_id = 1 [json_name = "user_id"];
+}
+
+message GetUserResponse {
+    User user = 1 [json_name = "user"];
+}
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
