@@ -8,10 +8,10 @@ spec:
   - host: localhost
     http:
       paths:
-      - path: /service-a
+      - path: /api
         pathType: Prefix
         backend:
           service:
-            name: golang-service
+            name: api-gateway
             port:
               number: 8080

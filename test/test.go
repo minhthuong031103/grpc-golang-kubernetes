@@ -4,19 +4,28 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
 
 const (
-	requestCount = 50000
+	requestCount = 100000
 	concurrency  = 10
-	url          = "http://localhost/service-a"
+	url          = "http://localhost/api/service-a"
 	maxRetries   = 3 // Maximum number of retries for a failed request
 )
 
 func main() {
 	// Open a log file
+	logFile, err := os.OpenFile("request_log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+	defer logFile.Close()
+
+	// Set log output to the file
+	log.SetOutput(logFile)
 
 	var wg sync.WaitGroup
 	wg.Add(concurrency)

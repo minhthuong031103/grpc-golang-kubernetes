@@ -1,4 +1,4 @@
-module golang-service
+module api-gateway
 
 go 1.22.3
 

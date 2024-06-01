@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: service-a
+  template:
+    metadata:
+      labels:
+        app: service-a
+    spec:
+      containers:
+      - name: service-a
+        image: minhthuong031103/service-a:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: SERVICE_PORT
+            value: "8080"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-a
+spec:
+  selector:
+    app: service-a
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: NodePort
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service-a-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service-a
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 10
+      policies:
+      - type: Percent
+        value: 100  # Scale down by a percentage of the current replicas
+        periodSeconds: 5  # Check and possibly scale down every 60 seconds
+    scaleUp:
+      stabilizationWindowSeconds: 0 #
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 2
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20

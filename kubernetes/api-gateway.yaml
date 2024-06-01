@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: minhthuong031103/api-gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: SERVICE_PORT
+            value: "8080"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: NodePort
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 10
+      policies:
+      - type: Percent
+        value: 100  # Scale down by a percentage of the current replicas
+        periodSeconds: 5  # Check and possibly scale down every 60 seconds
+    scaleUp:
+      stabilizationWindowSeconds: 0 # The amount of time to wait before considering a scale up action after the last scale up
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 3 #
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20
