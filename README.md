@@ -16,6 +16,7 @@ minikube addons enable ingress
 minikube tunnel
 OR forward port with the nginx ingress service
 
-
 cd test
 go run test.go
+
+=> logic code order, proto common, performance testing
