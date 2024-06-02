@@ -13,7 +13,7 @@ import (
 
 func main() {
 	const addr = "0.0.0.0:50051"
-	const userServiceAddr = "0.0.0.0:50052"
+	const userServiceAddr = "user-service:50052"
 
 	// Create a TCP listener on the specified port
 	listener, err := net.Listen("tcp", addr)

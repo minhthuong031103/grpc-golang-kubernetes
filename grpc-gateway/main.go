@@ -17,7 +17,7 @@ import (
 
 func main() {
 	// Set up a connection to the order server.
-	orderServiceAddr := "localhost:50051"
+	orderServiceAddr := "order-service:50051"
 	conn, err := grpc.NewClient(orderServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("could not connect to order service: %v", err)

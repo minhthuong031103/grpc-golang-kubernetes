@@ -39,7 +39,7 @@ func (s *OrderService) AddOrder(ctx context.Context, req *orders.PayloadWithSing
 	log.Printf("Fetched user details: %v", userResp.User)
 
 	// Add order logic
-	return &orders.Empty{}, nil
+	return &orders.Empty{}, s.db.AddOrder(req.GetOrder())
 }
 
 // GetOrder implements the GetOrder method of the grpc OrdersServer interface to fetch an order for a given orderID

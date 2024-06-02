@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build -o order-service .
 
-EXPOSE 8080
+EXPOSE 50051
 
 CMD ["./order-service"]

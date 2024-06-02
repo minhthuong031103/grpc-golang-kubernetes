@@ -16,16 +16,16 @@ func NewUserService(db *DB) *UserService {
 
 func (s *UserService) GetUser(ctx context.Context, req *users.GetUserRequest) (*users.GetUserResponse, error) {
 	// Example logic to fetch user from db using req.UserId
-	user, err := s.db.GetUser(req.UserId)
-	if err != nil {
-		return nil, err
-	}
+	// user, err := s.db.GetUser(req.UserId)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return &users.GetUserResponse{
 		User: &users.User{
-			UserId: user.ID,
-			Name:   user.Name,
-			Email:  user.Email,
+			UserId: 1, // Hardcoded for now
+			Name:   "John Doe",
+			Email:  "John@gmail.com",
 		},
 	}, nil
 }

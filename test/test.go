@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	requestCount = 100000
-	concurrency  = 1
-	url          = "http://localhost:8080/v0/orders"
+	requestCount = 50000
+	concurrency  = 10
+	url          = "http://localhost/v0/orders"
 	maxRetries   = 3 // Maximum number of retries for a failed request
 )
 
