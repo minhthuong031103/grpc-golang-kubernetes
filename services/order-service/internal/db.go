@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	orders "order-service/protogen/golang/orders"
+	orders "order-service/protogen/golang/order"
 )
 
 type DB struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	orders "order-service/protogen/golang/orders"
+	orders "order-service/protogen/golang/order"
 	"order-service/protogen/golang/user"
 )
 

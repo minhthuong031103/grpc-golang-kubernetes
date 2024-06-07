@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 	"order-service/internal"
-	orders "order-service/protogen/golang/orders"
+	orders "order-service/protogen/golang/order"
 	users "order-service/protogen/golang/user"
 
 	"google.golang.org/grpc"
