@@ -1,50 +1,30 @@
-// ./cmd/client/main.go
-
 package main
 
 import (
-	"context"
 	"log"
-	"net/http"
 
-	orderpb "grpc-gateway/protogen/golang/order"
-
-	"github.com/gin-gonic/gin"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"grpc-gateway/internal/config"
+	"grpc-gateway/internal/orderclient"
+	"grpc-gateway/internal/server"
 )
 
 func main() {
-	// Set up a connection to the order server.
-	orderServiceAddr := "order-service:50051"
-	conn, err := grpc.NewClient(orderServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("could not connect to order service: %v", err)
+	// Load configuration
+	cfg := config.Load()
+
+	// Establish a connection to the order service
+	orderclient := orderclient.NewOrderClient(cfg.OrderServiceAddress)
+	if err := orderclient.Connect(); err != nil {
+		log.Fatalf("Failed to connect to order service: %v", err)
 	}
-	defer conn.Close()
+	defer orderclient.Disconnect()
 
-	// Create a gRPC-Gateway mux
-	mux := runtime.NewServeMux()
-	if err := orderpb.RegisterOrdersHandler(context.Background(), mux, conn); err != nil {
-		log.Fatalf("failed to register the order server: %v", err)
-	}
+	// Set up the HTTP server with integrated gRPC-Gateway and Gin router
+	router := server.SetupRouter(orderclient.GetConnection())
 
-	// Create a Gin router
-	r := gin.Default()
-
-	// Integrate the gRPC-Gateway mux with Gin
-	r.Any("/v0/*any", gin.WrapH(mux))
-
-	// Add additional routes or middleware as needed
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
-	// Start the HTTP server
-	addr := "0.0.0.0:8080"
-	log.Printf("API gateway server is running on %s", addr)
-	if err := r.Run(addr); err != nil {
-		log.Fatal("gateway server closed abruptly: ", err)
+	// Start the HTTP server and log any errors encountered
+	log.Printf("API gateway server is running on %s", cfg.ServerAddress)
+	if err := router.Run(cfg.ServerAddress); err != nil {
+		log.Fatalf("gateway server closed abruptly: %v", err)
 	}
 }
