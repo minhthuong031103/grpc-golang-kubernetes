@@ -13,25 +13,26 @@ spec:
         app: order-service
     spec:
       containers:
-      - name: order-service
-        image: minhthuong031103/order-service:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 50051
-        env:
-          - name: SERVICE_PORT
-            value: "50051"
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "64Mi"
-          limits:
-            cpu: "200m"
-            memory: "128Mi"
+        - name: order-service
+          image: minhthuong031103/order-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+            - containerPort: 9090
+          env:
+            - name: SERVICE_PORT
+              value: "50051"
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
 
 ---
 apiVersion: v1
@@ -42,9 +43,14 @@ spec:
   selector:
     app: order-service
   ports:
-  - protocol: TCP
-    port: 50051
-    targetPort: 50051
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
   type: NodePort
 
 ---
@@ -61,15 +67,15 @@ spec:
     scaleDown:
       stabilizationWindowSeconds: 10
       policies:
-      - type: Percent
-        value: 100  # Scale down by a percentage of the current replicas
-        periodSeconds: 5  # Check and possibly scale down every 60 seconds
+        - type: Percent
+          value: 100 # Scale down by a percentage of the current replicas
+          periodSeconds: 5 # Check and possibly scale down every 60 seconds
     scaleUp:
       stabilizationWindowSeconds: 0 #
       policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 2
+        - type: Percent
+          value: 100
+          periodSeconds: 2
   minReplicas: 1
   maxReplicas: 10
   metrics:

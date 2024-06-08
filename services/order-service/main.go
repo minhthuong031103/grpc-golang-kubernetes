@@ -16,7 +16,7 @@ func main() {
 	const userServiceAddr = "user-service:50052"
 
 	// Create a TCP listener on the specified port
-	listener, err := net.Listen("tcp", addr)
+	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

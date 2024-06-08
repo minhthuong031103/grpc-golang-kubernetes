@@ -13,7 +13,7 @@ func main() {
 	const addr = "0.0.0.0:50052"
 
 	// Create a TCP listener on the specified port
-	listener, err := net.Listen("tcp", addr)
+	listener, err := net.Listen("tcp", ":50052")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
