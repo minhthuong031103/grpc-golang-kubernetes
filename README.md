@@ -28,4 +28,10 @@ Write-Output "Username: $decodedUsername"
 
 Write-Output "Password: $decodedPassword"
 
-kubectl create -f prometheus-operator-crd kubectl apply -R -f .\monitoring\
+kubectl create -f prometheus-operator-crd
+
+kubectl apply -R -f .\monitoring\
+
+kubectl port-forward svc/prometheus-operated 9090
+
+kubectl -n grafana port-forward svc/grafana 3000
