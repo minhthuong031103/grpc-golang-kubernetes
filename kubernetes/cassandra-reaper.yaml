@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cassandra-reaper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cassandra-reaper
+  template:
+    metadata:
+      labels:
+        app: cassandra-reaper
+    spec:
+      containers:
+        - name: cassandra-reaper
+          image: thelastpickle/cassandra-reaper:latest
+          ports:
+            - containerPort: 8080 # Reaper UI port
+          env:
+            - name: REAPER_STORAGE_TYPE
+              value: "cassandra"
+            - name: REAPER_CASS_CONTACT_POINTS
+              value: "cassandra-0.cassandra,cassandra-1.cassandra,cassandra-2.cassandra"
+            - name: REAPER_CASS_PORT
+              value: "9042"
+            - name: REAPER_CASS_KEYSPACE
+              value: "reaper_db"
+            - name: REAPER_CASS_CLUSTER_NAME
+              value: "CassandraCluster"
+            - name: REAPER_JMX_AUTH_USERNAME
+              value: "cassandra"
+            - name: REAPER_JMX_AUTH_PASSWORD
+              value: "cassandra"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-reaper
+spec:
+  type: ClusterIP
+  selector:
+    app: cassandra-reaper
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+

@@ -8,10 +8,8 @@ import "google/api/annotations.proto";
 
 message Order {
     uint64 order_id = 1 [ json_name = "order_id" ];
-    uint64 customer_id = 2 [ json_name = "customer_id" ];
-    bool is_active = 3 [ json_name = "is_active" ];
-    repeated Product products = 4;
-    google.type.Date order_date = 5 [ json_name = "order_date" ];
+    repeated Product products = 2;
+    google.type.Date order_date = 3 [ json_name = "order_date" ];
 }
 
 message Empty {}
