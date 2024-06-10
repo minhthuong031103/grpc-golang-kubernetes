@@ -2,22 +2,26 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
+	"productservice/config"
 	pb "productservice/generated/product"
 
 	"google.golang.org/grpc"
 )
 
-const (
-	address = "localhost:50052"
-)
-
 func main() {
+	config, err := config.LoadConfig()
+	if err != nil {
+		fmt.Printf("Could not load config: %v\n", err)
+		return
+	}
+	address := fmt.Sprintf("localhost:%d", config.Server.Port)
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		fmt.Printf("Did not connect: %v\n", err)
+		return
 	}
 	defer conn.Close()
 	client := pb.NewProductServiceClient(conn)
@@ -26,35 +30,40 @@ func main() {
 	defer cancel()
 
 	// // Create a new product
-	// log.Println("Creating a new product...")
+	// fmt.Println("Creating a new product...")
 	// createRes, err := client.CreateProduct(ctx, &pb.CreateProductRequest{
 	// 	ProductName: "New Product",
 	// 	Price:       19.99,
+	// 	Description: "A brand new product.",
 	// 	Quantity:    10,
+	// 	Sold:        0,
 	// })
 	// if err != nil {
-	// 	log.Fatalf("Could not create product: %v", err)
+	// 	fmt.Printf("Could not create product: %v\n", err)
+	// 	return
 	// }
-	// log.Printf("Product created with ID: %s", createRes.GetProductId())
+	// fmt.Printf("Product created with ID: %s\n", createRes.GetProductId())
 
 	// // Get the product
-	// log.Printf("Getting product with ID: %s", createRes.GetProductId())
+	// fmt.Printf("Getting product with ID: %s\n", createRes.GetProductId())
 	// getRes, err := client.GetProduct(ctx, &pb.GetProductRequest{
 	// 	ProductId: createRes.GetProductId(),
 	// })
 	// if err != nil {
-	// 	log.Fatalf("Could not get product: %v", err)
+	// 	fmt.Printf("Could not get product: %v\n", err)
+	// 	return
 	// }
-	// log.Printf("Product: %v", getRes)
+	// fmt.Printf("Product: %v\n", getRes)
 
 	// Get all products
-	log.Println("Getting all products...")
+	fmt.Println("Getting all products...")
 	getAllRes, err := client.GetAllProducts(ctx, &pb.GetAllProductsRequest{})
 	if err != nil {
-		log.Fatalf("Could not get all products: %v", err)
+		fmt.Printf("Could not get all products: %v\n", err)
+		return
 	}
 	for _, product := range getAllRes.GetProducts() {
-		log.Printf("Product ID: %s, Name: %s, Price: %.2f, Quantity: %d, Image URL: %s",
-			product.ProductId, product.ProductName, product.Price, product.Quantity, product.ImageUrl)
+		fmt.Printf("Product ID: %s, Name: %s, Price: %.2f, Description: %s, Quantity: %d, Sold: %d, Image URL: %s\n",
+			product.ProductId, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageUrl)
 	}
 }

@@ -33,7 +33,9 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 		ProductID:   productID,
 		ProductName: req.ProductName,
 		Price:       req.Price,
+		Description: req.Description,
 		Quantity:    req.Quantity,
+		Sold:        req.Sold,
 		ImageURL:    defaultImageURL,
 	}
 	err := s.ProductDAL.CreateProduct(product)
@@ -56,7 +58,9 @@ func (s *Server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb
 		ProductId:   product.ProductID.String(),
 		ProductName: product.ProductName,
 		Price:       product.Price,
+		Description: product.Description,
 		Quantity:    product.Quantity,
+		Sold:        product.Sold,
 		ImageUrl:    product.ImageURL,
 	}, nil
 }
@@ -72,7 +76,9 @@ func (s *Server) GetAllProducts(ctx context.Context, req *pb.GetAllProductsReque
 			ProductId:   product.ProductID.String(),
 			ProductName: product.ProductName,
 			Price:       product.Price,
+			Description: product.Description,
 			Quantity:    product.Quantity,
+			Sold:        product.Sold,
 			ImageUrl:    product.ImageURL,
 		})
 	}
