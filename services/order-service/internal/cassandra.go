@@ -45,9 +45,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if err != nil {
-		panic(err)
-	}
 
 	fmt.Println("Cassandra initialized successfully")
 }
