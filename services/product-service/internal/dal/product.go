@@ -60,3 +60,20 @@ func (dal *ProductDAL) GetAllProducts() ([]Product, error) {
 	}
 	return products, nil
 }
+
+func (dal *ProductDAL) UpdateProductQuantityAndSold(productID gocql.UUID, quantity, sold int32) error {
+	// check if the product exists
+	_, err := dal.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
+	// update the product quantity and sold
+	err = dal.Session.Query(`UPDATE product SET quantity = ?, sold = ? WHERE product_id = ?`,
+		quantity, sold, productID).Exec()
+	if err != nil {
+		log.Printf("Failed to update product quantity and sold: %v", err)
+		return err
+	}
+	return nil
+}

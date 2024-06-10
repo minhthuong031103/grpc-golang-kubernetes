@@ -66,4 +66,17 @@ func main() {
 		fmt.Printf("Product ID: %s, Name: %s, Price: %.2f, Description: %s, Quantity: %d, Sold: %d, Image URL: %s\n",
 			product.ProductId, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageUrl)
 	}
+
+	// Update product quantity and sold
+	// fmt.Println("Updating product quantity and sold...")
+	// updateRes, err := client.UpdateProductQuantityAndSold(ctx, &pb.UpdateProductQuantityAndSoldRequest{
+	// 	ProductId: "d4b3b3e0-0b3b-11ec-9a03-0242ac110002",
+	// 	Quantity:  20,
+	// 	Sold:      20,
+	// })
+	// if err != nil {
+	// 	fmt.Printf("Could not update product: %v\n", err)
+	// 	return
+	// }
+	// fmt.Printf("Product updated: %v\n", updateRes)
 }

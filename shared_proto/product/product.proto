@@ -8,6 +8,7 @@ service ProductService {
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc GetAllProducts (GetAllProductsRequest) returns (GetAllProductsResponse);
+  rpc UpdateProductQuantityAndSold (UpdateProductQuantityAndSoldRequest) returns (UpdateProductQuantityAndSoldResponse);
 }
 
 message CreateProductRequest {
@@ -50,4 +51,16 @@ message Product {
   int32 quantity = 5;
   int32 sold = 6;
   string image_url = 7;
+}
+
+message UpdateProductQuantityAndSoldRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+  int32 sold = 3;
+}
+
+message UpdateProductQuantityAndSoldResponse {
+  string product_id = 1;
+  int32 quantity = 2;
+  int32 sold = 3;
 }

@@ -85,6 +85,28 @@ func (s *Server) GetAllProducts(ctx context.Context, req *pb.GetAllProductsReque
 	return &pb.GetAllProductsResponse{Products: productResponses}, nil
 }
 
+func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.UpdateProductQuantityAndSoldRequest) (*pb.UpdateProductQuantityAndSoldResponse, error) {
+	productID, err := gocql.ParseUUID(req.ProductId)
+	if err != nil {
+		return nil, err
+	}
+	err = s.ProductDAL.UpdateProductQuantityAndSold(productID, req.Quantity, req.Sold)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedProduct, err := s.ProductDAL.GetProductByID(productID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateProductQuantityAndSoldResponse{
+		ProductId: updatedProduct.ProductID.String(),
+		Quantity:  updatedProduct.Quantity,
+		Sold:      updatedProduct.Sold,
+	}, nil
+}
+
 // UnaryInterceptor is a server interceptor for logging requests.
 func UnaryInterceptor(
 	ctx context.Context,
