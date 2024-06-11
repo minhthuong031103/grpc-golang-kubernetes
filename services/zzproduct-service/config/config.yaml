@@ -1,8 +1,0 @@
-server:
-  port: 50052
-
-cassandra:
-  hosts:
-    - "77.37.47.87"
-  keyspace: "demo"
-  consistency: "Quorum"
