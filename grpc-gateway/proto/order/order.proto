@@ -22,8 +22,8 @@ message PayloadWithOrderID {
   uint64 order_id = 1;
 }
 
-    message PayloadWithMultipleOrders {
-    repeated Order orders = 1;
+message PayloadWithMultipleOrders {
+  repeated Order orders = 1;
 }
 
 
@@ -35,13 +35,13 @@ service Orders {
     };
     
   }
-rpc ListOrders(Empty) returns (PayloadWithMultipleOrders) {
+  rpc ListOrders(Empty) returns (PayloadWithMultipleOrders) {
     option (google.api.http) = {
       get: "/v0/orders",
     };
-    }
+  }
 
-    rpc GetOrder(PayloadWithOrderID) returns (PayloadWithSingleOrder) {
+  rpc GetOrder(PayloadWithOrderID) returns (PayloadWithSingleOrder) {
     option (google.api.http) = {
       get: "/v0/orders/{order_id}",
     };
