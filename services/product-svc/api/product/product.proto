@@ -2,14 +2,32 @@ syntax = "proto3";
 
 package product;
 
-
+import "google/api/annotations.proto";
 option go_package = "productsvc/api/product/v1";
 
 service ProductService {
-  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
-  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
-  rpc GetAllProducts (GetAllProductsRequest) returns (GetAllProductsResponse);
-  rpc UpdateProductQuantityAndSold (UpdateProductQuantityAndSoldRequest) returns (UpdateProductQuantityAndSoldResponse);
+  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {
+    option (google.api.http) = {
+      post: "/product"
+      body: "*"
+    };
+  }
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse) {
+    option (google.api.http) = {
+      get: "/product/{product_id}"
+    };
+  }
+  rpc GetAllProducts (GetAllProductsRequest) returns (GetAllProductsResponse) {
+    option (google.api.http) = {
+      get: "/products"
+    };
+  }
+  rpc UpdateProductQuantityAndSold (UpdateProductQuantityAndSoldRequest) returns (UpdateProductQuantityAndSoldResponse) {
+    option (google.api.http) = {
+      put: "/product/{product_id}"
+      body: "*"
+    };
+  }
 }
 
 message CreateProductRequest {
