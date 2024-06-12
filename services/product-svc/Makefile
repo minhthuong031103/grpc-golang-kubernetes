@@ -4,8 +4,9 @@ PROJECT_NAME := productsvc
 
 all: generate build-all
 
-.PHONY: generate
-generate:
+.PHONY: gen
+gen:
+	echo "Generating API using buf..."
 	buf generate api
 
 .PHONY: build
