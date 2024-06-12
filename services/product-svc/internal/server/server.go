@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"productsvc/internal/dal"
-	pb "productsvc/internal/generated/product/v1"
+	pb "productsvc/internal/generated/product"
 
 	"google.golang.org/grpc"
 )

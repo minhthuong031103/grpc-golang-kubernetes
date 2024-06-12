@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"productsvc/internal/dal"
-	pb "productsvc/internal/generated/product/v1"
+	pb "productsvc/internal/generated/product"
 
 	"github.com/gocql/gocql"
 )
