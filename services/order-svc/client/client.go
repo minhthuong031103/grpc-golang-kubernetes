@@ -37,7 +37,6 @@ func main() {
 	}
 	for _, order := range getAllRes.GetOrders() {
 		fmt.Printf("Order: %v\n", order)
-
 	}
 
 }
