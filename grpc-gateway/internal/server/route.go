@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	orderpb "gateway/internal/generated/order"
+	productpb "gateway/internal/generated/product"
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -14,14 +15,18 @@ import (
 )
 
 // SetupRouter initializes and returns a new Gin router
-func SetupRouter(grpcConn *grpc.ClientConn) *gin.Engine {
+func SetupRouter(productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
 	router := gin.Default()
 
 	// Set up the gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
-	err := orderpb.RegisterOrdersHandler(context.Background(), gwmux, grpcConn)
+	err := productpb.RegisterProductServiceHandler(context.Background(), gwmux, productConn)
 	if err != nil {
-		log.Fatalf("Failed to register gRPC gateway: %v", err)
+		log.Fatalf("Failed to register PRODUCT: %v", err)
+	}
+	err = orderpb.RegisterOrdersHandler(context.Background(), gwmux, orderConn)
+	if err != nil {
+		log.Fatalf("Failed to register ORDER: %v", err)
 	}
 
 	// Standard HTTP routes
