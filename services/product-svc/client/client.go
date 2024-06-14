@@ -44,28 +44,27 @@ func main() {
 	// }
 	// fmt.Printf("Product created with ID: %s\n", createRes.GetProductId())
 
-	// // Get the product
-	// fmt.Printf("Getting product with ID: %s\n", createRes.GetProductId())
-	// getRes, err := client.GetProduct(ctx, &pb.GetProductRequest{
-	// 	ProductId: createRes.GetProductId(),
-	// })
-	// if err != nil {
-	// 	fmt.Printf("Could not get product: %v\n", err)
-	// 	return
-	// }
-	// fmt.Printf("Product: %v\n", getRes)
-
-	// Get all products
-	fmt.Println("Getting all products...")
-	getAllRes, err := client.GetAllProducts(ctx, &pb.GetAllProductsRequest{})
+	// Get the product
+	getRes, err := client.GetProduct(ctx, &pb.GetProductRequest{
+		ProductId: "74f73a30-276b-11ef-a73e-fa86668df8a7",
+	})
 	if err != nil {
-		fmt.Printf("Could not get all products: %v\n", err)
+		fmt.Printf("Could not get product: %v\n", err)
 		return
 	}
-	for _, product := range getAllRes.GetProducts() {
-		fmt.Printf("Product ID: %s, Name: %s, Price: %.2f, Description: %s, Quantity: %d, Sold: %d, Image URL: %s\n",
-			product.ProductId, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageUrl)
-	}
+	fmt.Printf("Product: %v\n", getRes)
+
+	// Get all products
+	// fmt.Println("Getting all products from service " + address + "...")
+	// getAllRes, err := client.GetAllProducts(ctx, &pb.GetAllProductsRequest{})
+	// if err != nil {
+	// 	fmt.Printf("Could not get all products: %v\n", err)
+	// 	return
+	// }
+	// for _, product := range getAllRes.GetProducts() {
+	// 	fmt.Printf("Product ID: %s, Name: %s, Price: %.2f, Description: %s, Quantity: %d, Sold: %d, Image URL: %s\n",
+	// 		product.ProductId, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageUrl)
+	// }
 
 	// Update product quantity and sold
 	// fmt.Println("Updating product quantity and sold...")

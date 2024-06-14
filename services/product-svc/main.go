@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	log.Println("Starting product service...")
+	log.Println("Starting PRODUCT service...")
 	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)

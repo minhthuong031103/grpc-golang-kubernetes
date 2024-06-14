@@ -11,8 +11,9 @@ import (
 var configFile []byte
 
 type Config struct {
-	Server    ServerConfig    `yaml:"server"`
-	Cassandra CassandraConfig `yaml:"cassandra"`
+	Server     ServerConfig    `yaml:"server"`
+	Cassandra  CassandraConfig `yaml:"cassandra"`
+	ProductSvc ServiceConfig   `yaml:"productsvc"`
 }
 
 type ServerConfig struct {
@@ -23,6 +24,11 @@ type CassandraConfig struct {
 	Hosts       []string `yaml:"hosts"`
 	Keyspace    string   `yaml:"keyspace"`
 	Consistency string   `yaml:"consistency"`
+}
+
+type ServiceConfig struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 func LoadConfig() (*Config, error) {

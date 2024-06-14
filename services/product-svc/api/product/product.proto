@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package product;
-
 import "google/api/annotations.proto";
 option go_package = "productsvc/api/product/v1";
 
@@ -28,6 +26,16 @@ service ProductService {
       body: "*"
     };
   }
+}
+
+message Product {
+  string product_id = 1;
+  string product_name = 2;
+  double price = 3;
+  string description = 4;
+  int32 quantity = 5;
+  int32 sold = 6;
+  string image_url = 7;
 }
 
 message CreateProductRequest {
@@ -60,16 +68,6 @@ message GetAllProductsRequest {}
 
 message GetAllProductsResponse {
   repeated Product products = 1;
-}
-
-message Product {
-  string product_id = 1;
-  string product_name = 2;
-  double price = 3;
-  string description = 4;
-  int32 quantity = 5;
-  int32 sold = 6;
-  string image_url = 7;
 }
 
 message UpdateProductQuantityAndSoldRequest {

@@ -29,7 +29,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	fmt.Println("Getting all orders...")
+	fmt.Println("Getting all orders from service " + address + "...")
 	getAllRes, err := client.ListOrders(ctx, &pb.Empty{})
 	if err != nil {
 		fmt.Printf("Could not get all orders: %v\n", err)

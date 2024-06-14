@@ -35,21 +35,22 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on Order with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on OrderDetails with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *Order) Validate() error {
+func (m *OrderDetails) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Order with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in OrderMultiError, or nil if none found.
-func (m *Order) ValidateAll() error {
+// ValidateAll checks the field values on OrderDetails with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in OrderDetailsMultiError, or
+// nil if none found.
+func (m *OrderDetails) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Order) validate(all bool) error {
+func (m *OrderDetails) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -57,6 +58,40 @@ func (m *Order) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for OrderId
+
+	for idx, item := range m.GetProducts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, OrderDetailsValidationError{
+						field:  fmt.Sprintf("Products[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, OrderDetailsValidationError{
+						field:  fmt.Sprintf("Products[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return OrderDetailsValidationError{
+					field:  fmt.Sprintf("Products[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	// no validation rules for Total
 
@@ -69,18 +104,18 @@ func (m *Order) validate(all bool) error {
 	// no validation rules for Status
 
 	if len(errors) > 0 {
-		return OrderMultiError(errors)
+		return OrderDetailsMultiError(errors)
 	}
 
 	return nil
 }
 
-// OrderMultiError is an error wrapping multiple validation errors returned by
-// Order.ValidateAll() if the designated constraints aren't met.
-type OrderMultiError []error
+// OrderDetailsMultiError is an error wrapping multiple validation errors
+// returned by OrderDetails.ValidateAll() if the designated constraints aren't met.
+type OrderDetailsMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m OrderMultiError) Error() string {
+func (m OrderDetailsMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -89,11 +124,11 @@ func (m OrderMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m OrderMultiError) AllErrors() []error { return m }
+func (m OrderDetailsMultiError) AllErrors() []error { return m }
 
-// OrderValidationError is the validation error returned by Order.Validate if
-// the designated constraints aren't met.
-type OrderValidationError struct {
+// OrderDetailsValidationError is the validation error returned by
+// OrderDetails.Validate if the designated constraints aren't met.
+type OrderDetailsValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -101,22 +136,22 @@ type OrderValidationError struct {
 }
 
 // Field function returns field value.
-func (e OrderValidationError) Field() string { return e.field }
+func (e OrderDetailsValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e OrderValidationError) Reason() string { return e.reason }
+func (e OrderDetailsValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e OrderValidationError) Cause() error { return e.cause }
+func (e OrderDetailsValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e OrderValidationError) Key() bool { return e.key }
+func (e OrderDetailsValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e OrderValidationError) ErrorName() string { return "OrderValidationError" }
+func (e OrderDetailsValidationError) ErrorName() string { return "OrderDetailsValidationError" }
 
 // Error satisfies the builtin error interface
-func (e OrderValidationError) Error() string {
+func (e OrderDetailsValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -128,14 +163,14 @@ func (e OrderValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sOrder.%s: %s%s",
+		"invalid %sOrderDetails.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = OrderValidationError{}
+var _ error = OrderDetailsValidationError{}
 
 var _ interface {
 	Field() string
@@ -143,7 +178,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = OrderValidationError{}
+} = OrderDetailsValidationError{}
 
 // Validate checks the field values on Empty with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -478,22 +513,22 @@ var _ interface {
 	ErrorName() string
 } = PayloadWithOrderIDValidationError{}
 
-// Validate checks the field values on PayloadWithMultipleOrders with the rules
+// Validate checks the field values on ListOrderDetailsResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *PayloadWithMultipleOrders) Validate() error {
+func (m *ListOrderDetailsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on PayloadWithMultipleOrders with the
+// ValidateAll checks the field values on ListOrderDetailsResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// PayloadWithMultipleOrdersMultiError, or nil if none found.
-func (m *PayloadWithMultipleOrders) ValidateAll() error {
+// ListOrderDetailsResponseMultiError, or nil if none found.
+func (m *ListOrderDetailsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *PayloadWithMultipleOrders) validate(all bool) error {
+func (m *ListOrderDetailsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -507,7 +542,7 @@ func (m *PayloadWithMultipleOrders) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, PayloadWithMultipleOrdersValidationError{
+					errors = append(errors, ListOrderDetailsResponseValidationError{
 						field:  fmt.Sprintf("Orders[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -515,7 +550,7 @@ func (m *PayloadWithMultipleOrders) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, PayloadWithMultipleOrdersValidationError{
+					errors = append(errors, ListOrderDetailsResponseValidationError{
 						field:  fmt.Sprintf("Orders[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -524,7 +559,7 @@ func (m *PayloadWithMultipleOrders) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return PayloadWithMultipleOrdersValidationError{
+				return ListOrderDetailsResponseValidationError{
 					field:  fmt.Sprintf("Orders[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -535,19 +570,19 @@ func (m *PayloadWithMultipleOrders) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return PayloadWithMultipleOrdersMultiError(errors)
+		return ListOrderDetailsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// PayloadWithMultipleOrdersMultiError is an error wrapping multiple validation
-// errors returned by PayloadWithMultipleOrders.ValidateAll() if the
-// designated constraints aren't met.
-type PayloadWithMultipleOrdersMultiError []error
+// ListOrderDetailsResponseMultiError is an error wrapping multiple validation
+// errors returned by ListOrderDetailsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListOrderDetailsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m PayloadWithMultipleOrdersMultiError) Error() string {
+func (m ListOrderDetailsResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -556,11 +591,11 @@ func (m PayloadWithMultipleOrdersMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m PayloadWithMultipleOrdersMultiError) AllErrors() []error { return m }
+func (m ListOrderDetailsResponseMultiError) AllErrors() []error { return m }
 
-// PayloadWithMultipleOrdersValidationError is the validation error returned by
-// PayloadWithMultipleOrders.Validate if the designated constraints aren't met.
-type PayloadWithMultipleOrdersValidationError struct {
+// ListOrderDetailsResponseValidationError is the validation error returned by
+// ListOrderDetailsResponse.Validate if the designated constraints aren't met.
+type ListOrderDetailsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -568,24 +603,24 @@ type PayloadWithMultipleOrdersValidationError struct {
 }
 
 // Field function returns field value.
-func (e PayloadWithMultipleOrdersValidationError) Field() string { return e.field }
+func (e ListOrderDetailsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e PayloadWithMultipleOrdersValidationError) Reason() string { return e.reason }
+func (e ListOrderDetailsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e PayloadWithMultipleOrdersValidationError) Cause() error { return e.cause }
+func (e ListOrderDetailsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e PayloadWithMultipleOrdersValidationError) Key() bool { return e.key }
+func (e ListOrderDetailsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e PayloadWithMultipleOrdersValidationError) ErrorName() string {
-	return "PayloadWithMultipleOrdersValidationError"
+func (e ListOrderDetailsResponseValidationError) ErrorName() string {
+	return "ListOrderDetailsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e PayloadWithMultipleOrdersValidationError) Error() string {
+func (e ListOrderDetailsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -597,14 +632,14 @@ func (e PayloadWithMultipleOrdersValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sPayloadWithMultipleOrders.%s: %s%s",
+		"invalid %sListOrderDetailsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = PayloadWithMultipleOrdersValidationError{}
+var _ error = ListOrderDetailsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -612,4 +647,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = PayloadWithMultipleOrdersValidationError{}
+} = ListOrderDetailsResponseValidationError{}

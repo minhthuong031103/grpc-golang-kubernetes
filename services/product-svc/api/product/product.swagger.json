@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productCreateProductResponse"
+              "$ref": "#/definitions/CreateProductResponse"
             }
           },
           "default": {
@@ -39,7 +39,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/productCreateProductRequest"
+              "$ref": "#/definitions/CreateProductRequest"
             }
           }
         ],
@@ -55,7 +55,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productGetProductResponse"
+              "$ref": "#/definitions/GetProductResponse"
             }
           },
           "default": {
@@ -83,7 +83,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productUpdateProductQuantityAndSoldResponse"
+              "$ref": "#/definitions/UpdateProductQuantityAndSoldResponse"
             }
           },
           "default": {
@@ -121,7 +121,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productGetAllProductsResponse"
+              "$ref": "#/definitions/GetAllProductsResponse"
             }
           },
           "default": {
@@ -138,6 +138,107 @@
     }
   },
   "definitions": {
+    "CreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "productName": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "description": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sold": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreateProductResponse": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        }
+      }
+    },
+    "GetAllProductsResponse": {
+      "type": "object",
+      "properties": {
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Product"
+          }
+        }
+      }
+    },
+    "GetProductResponse": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "description": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sold": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "imageUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "description": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sold": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "imageUrl": {
+          "type": "string"
+        }
+      }
+    },
     "ProductServiceUpdateProductQuantityAndSoldBody": {
       "type": "object",
       "properties": {
@@ -151,108 +252,7 @@
         }
       }
     },
-    "productCreateProductRequest": {
-      "type": "object",
-      "properties": {
-        "productName": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "description": {
-          "type": "string"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "productCreateProductResponse": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        }
-      }
-    },
-    "productGetAllProductsResponse": {
-      "type": "object",
-      "properties": {
-        "products": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/productProduct"
-          }
-        }
-      }
-    },
-    "productGetProductResponse": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "productName": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "description": {
-          "type": "string"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "imageUrl": {
-          "type": "string"
-        }
-      }
-    },
-    "productProduct": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "productName": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "description": {
-          "type": "string"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "imageUrl": {
-          "type": "string"
-        }
-      }
-    },
-    "productUpdateProductQuantityAndSoldResponse": {
+    "UpdateProductQuantityAndSoldResponse": {
       "type": "object",
       "properties": {
         "productId": {

@@ -6,3 +6,7 @@ cassandra:
     - "77.37.47.87"
   keyspace: "demo"
   consistency: "Quorum"
+
+productsvc:
+  host: "localhost"
+  port: 50052

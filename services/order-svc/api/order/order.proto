@@ -4,9 +4,9 @@ import "product/product.proto";
 import "google/api/annotations.proto";
 option go_package = "ordersvc/api/order/v1";
 
-message Order {
+message OrderDetails {
   string order_id = 1;
-  repeated string product_ids = 2;
+  repeated Product products = 2;
   repeated int32 quantities = 3;
   double total = 4;
   string order_date = 5;
@@ -17,14 +17,14 @@ message Order {
 
 message Empty {}
 message PayloadWithSingleOrder {
-  Order order = 1;
+  OrderDetails order = 1;
 }
 message PayloadWithOrderID {
   string order_id = 1;
 }
 
-message PayloadWithMultipleOrders {
-  repeated Order orders = 1;
+message ListOrderDetailsResponse {
+  repeated OrderDetails orders = 1;
 }
 
 
@@ -35,7 +35,7 @@ service Orders {
       body: "*"
     };
   }
-  rpc ListOrders(Empty) returns (PayloadWithMultipleOrders) {
+  rpc ListOrders(Empty) returns (ListOrderDetailsResponse) {
     option (google.api.http) = {
       get: "/orders",
     };
@@ -58,5 +58,5 @@ service Orders {
     };
   }
 
-  
+
 }

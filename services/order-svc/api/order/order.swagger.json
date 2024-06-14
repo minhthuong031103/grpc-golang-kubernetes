@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/PayloadWithMultipleOrders"
+              "$ref": "#/definitions/ListOrderDetailsResponse"
             }
           },
           "default": {
@@ -161,16 +161,29 @@
     "Empty": {
       "type": "object"
     },
-    "Order": {
+    "ListOrderDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/OrderDetails"
+          }
+        }
+      }
+    },
+    "OrderDetails": {
       "type": "object",
       "properties": {
         "orderId": {
           "type": "string"
         },
-        "productIds": {
+        "products": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "#/definitions/Product"
           }
         },
         "quantities": {
@@ -198,23 +211,40 @@
         }
       }
     },
-    "PayloadWithMultipleOrders": {
-      "type": "object",
-      "properties": {
-        "orders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Order"
-          }
-        }
-      }
-    },
     "PayloadWithSingleOrder": {
       "type": "object",
       "properties": {
         "order": {
-          "$ref": "#/definitions/Order"
+          "$ref": "#/definitions/OrderDetails"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "description": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sold": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "imageUrl": {
+          "type": "string"
         }
       }
     },

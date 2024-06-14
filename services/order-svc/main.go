@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"ordersvc/config"
+	productclient "ordersvc/internal/client/product"
 	orderdal "ordersvc/internal/dal"
 	"ordersvc/internal/server"
 
@@ -11,7 +13,7 @@ import (
 )
 
 func main() {
-	log.Println("Starting product service...")
+	log.Println("Starting ORDER service...")
 	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
@@ -29,5 +31,13 @@ func main() {
 
 	orderDAL := orderdal.NewOrderDAL(session)
 
-	server.StartGRPCServer(config.Server.Port, orderDAL)
+	productAddress := fmt.Sprintf("%v:%v", config.ProductSvc.Host, config.ProductSvc.Port)
+	productClientConn := productclient.NewProductClient(productAddress)
+	if err := productClientConn.Connect(); err != nil {
+		log.Fatalf("Failed to connect to product service: %v", err)
+	}
+	log.Println("Connected to product service at", productAddress)
+	defer productClientConn.Disconnect()
+
+	server.StartGRPCServer(config.Server.Port, productClientConn, orderDAL)
 }

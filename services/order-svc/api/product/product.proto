@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-// package product;
-
 import "google/api/annotations.proto";
 option go_package = "productsvc/api/product/v1";
 

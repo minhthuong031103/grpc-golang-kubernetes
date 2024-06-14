@@ -31,7 +31,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrdersClient interface {
 	AddOrder(ctx context.Context, in *PayloadWithSingleOrder, opts ...grpc.CallOption) (*Empty, error)
-	ListOrders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PayloadWithMultipleOrders, error)
+	ListOrders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListOrderDetailsResponse, error)
 	GetOrder(ctx context.Context, in *PayloadWithOrderID, opts ...grpc.CallOption) (*PayloadWithSingleOrder, error)
 	UpdateOrder(ctx context.Context, in *PayloadWithSingleOrder, opts ...grpc.CallOption) (*Empty, error)
 	RemoveOrder(ctx context.Context, in *PayloadWithOrderID, opts ...grpc.CallOption) (*Empty, error)
@@ -55,9 +55,9 @@ func (c *ordersClient) AddOrder(ctx context.Context, in *PayloadWithSingleOrder,
 	return out, nil
 }
 
-func (c *ordersClient) ListOrders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PayloadWithMultipleOrders, error) {
+func (c *ordersClient) ListOrders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListOrderDetailsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PayloadWithMultipleOrders)
+	out := new(ListOrderDetailsResponse)
 	err := c.cc.Invoke(ctx, Orders_ListOrders_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (c *ordersClient) RemoveOrder(ctx context.Context, in *PayloadWithOrderID, 
 // for forward compatibility
 type OrdersServer interface {
 	AddOrder(context.Context, *PayloadWithSingleOrder) (*Empty, error)
-	ListOrders(context.Context, *Empty) (*PayloadWithMultipleOrders, error)
+	ListOrders(context.Context, *Empty) (*ListOrderDetailsResponse, error)
 	GetOrder(context.Context, *PayloadWithOrderID) (*PayloadWithSingleOrder, error)
 	UpdateOrder(context.Context, *PayloadWithSingleOrder) (*Empty, error)
 	RemoveOrder(context.Context, *PayloadWithOrderID) (*Empty, error)
@@ -114,7 +114,7 @@ type UnimplementedOrdersServer struct {
 func (UnimplementedOrdersServer) AddOrder(context.Context, *PayloadWithSingleOrder) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddOrder not implemented")
 }
-func (UnimplementedOrdersServer) ListOrders(context.Context, *Empty) (*PayloadWithMultipleOrders, error) {
+func (UnimplementedOrdersServer) ListOrders(context.Context, *Empty) (*ListOrderDetailsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOrders not implemented")
 }
 func (UnimplementedOrdersServer) GetOrder(context.Context, *PayloadWithOrderID) (*PayloadWithSingleOrder, error) {
