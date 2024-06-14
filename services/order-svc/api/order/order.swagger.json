@@ -1,0 +1,250 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "order/order.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Orders"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/orders": {
+      "get": {
+        "operationId": "Orders_ListOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PayloadWithMultipleOrders"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      },
+      "post": {
+        "operationId": "Orders_AddOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PayloadWithSingleOrder"
+            }
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      },
+      "put": {
+        "operationId": "Orders_UpdateOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PayloadWithSingleOrder"
+            }
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "operationId": "Orders_GetOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PayloadWithSingleOrder"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      },
+      "delete": {
+        "operationId": "Orders_RemoveOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Empty": {
+      "type": "object"
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string"
+        },
+        "productIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "total": {
+          "type": "number",
+          "format": "double"
+        },
+        "orderDate": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "shippingAddress": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "PayloadWithMultipleOrders": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Order"
+          }
+        }
+      }
+    },
+    "PayloadWithSingleOrder": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "$ref": "#/definitions/Order"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
