@@ -46,7 +46,7 @@ func (dal *CustomerDAL) GetCustomerByEmail(email string) (*Customer, error) {
 
 func (dal *CustomerDAL) GetCustomerByToken(token string) (*Customer, error) {
 	var customer Customer
-	err := dal.Session.Query(`SELECT CustomerId, Name, Email, Password, tokenstr FROM "customer" WHERE Token = ?`, token).Scan(
+	err := dal.Session.Query(`SELECT CustomerId, Name, Email, Password, tokenstr FROM "customer" WHERE tokenstr = ?`, token).Scan(
 		&customer.CustomerId, &customer.Name, &customer.Email, &customer.Password, &customer.Token)
 	if err != nil {
 		log.Printf("Failed to get customer by token: %v", err)
