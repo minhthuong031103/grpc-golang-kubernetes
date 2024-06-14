@@ -4,8 +4,9 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 
-	orderpb "grpc-gateway/protogen/golang/order"
+	orderpb "gateway/internal/generated/order"
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -23,10 +24,6 @@ func SetupRouter(grpcConn *grpc.ClientConn) *gin.Engine {
 		log.Fatalf("Failed to register gRPC gateway: %v", err)
 	}
 
-	// Handle all requests using gRPC-Gateway with a specific prefix, e.g., `/api`
-	apiRoutes := router.Group("/api")
-	apiRoutes.Any("/*any", gin.WrapH(gwmux))
-
 	// Standard HTTP routes
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
@@ -36,6 +33,13 @@ func SetupRouter(grpcConn *grpc.ClientConn) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+
+	// Handle all requests using gRPC-Gateway with a specific prefix, e.g., `/api`
+	apiRoutes := router.Group("/api")
+	apiRoutes.Any("/*any", func(ctx *gin.Context) {
+		ctx.Request.URL.Path = strings.TrimPrefix(ctx.Request.URL.Path, "/api")
+		ctx.Next()
+	}, gin.WrapH(gwmux))
 
 	return router
 }

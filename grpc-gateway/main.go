@@ -1,30 +1,34 @@
 package main
 
 import (
+	"fmt"
+	"gateway/config"
+	grpcclientconn "gateway/internal/connection"
+	"gateway/internal/server"
 	"log"
-
-	"grpc-gateway/internal/config"
-	"grpc-gateway/internal/orderclient"
-	"grpc-gateway/internal/server"
 )
 
 func main() {
-	// Load configuration
-	cfg := config.Load()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("could not load config: %v", err)
+	}
 
-	// Establish a connection to the order service
-	orderclient := orderclient.NewOrderClient(cfg.OrderServiceAddress)
+	fmt.Printf("GATEWAY is trying serve on port: %d\n", cfg.Server.Port)
+
+	orderclient := grpcclientconn.NewGRPCClient(cfg.OrderSvc.Address)
 	if err := orderclient.Connect(); err != nil {
 		log.Fatalf("Failed to connect to order service: %v", err)
 	}
+
 	defer orderclient.Disconnect()
 
 	// Set up the HTTP server with integrated gRPC-Gateway and Gin router
 	router := server.SetupRouter(orderclient.GetConnection())
 
 	// Start the HTTP server and log any errors encountered
-	log.Printf("API gateway server is running on %s", cfg.ServerAddress)
-	if err := router.Run(cfg.ServerAddress); err != nil {
+	log.Printf("API gateway server is running on %d", cfg.Server.Port)
+	if err := router.Run(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {
 		log.Fatalf("gateway server closed abruptly: %v", err)
 	}
 }
