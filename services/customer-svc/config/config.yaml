@@ -1,0 +1,10 @@
+server:
+  port: 50050
+
+cassandra:
+  hosts:
+    - "77.37.47.87"
+  keyspace: "demo"
+  consistency: "Quorum"
+
+secretkey: "mysecretkey"
