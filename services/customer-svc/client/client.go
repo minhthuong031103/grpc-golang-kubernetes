@@ -54,7 +54,7 @@ func main() {
 
 	fmt.Println("Trying to authenticate using token from service " + address + "...")
 	authRes, err := client.Authorize(ctx, &pb.Token{
-		Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCJ9.ZQ8DPJjhN1t7oc7QPcYvqwK-Ze3o3xLefMVQCQPsN-g",
+		Token: "ABC",
 	})
 	if err != nil {
 		fmt.Printf("Could not authenticate: %v\n", err)
