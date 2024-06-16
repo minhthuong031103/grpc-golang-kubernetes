@@ -6,27 +6,27 @@ echo "Working directory: $(pwd)"
 echo "Building services..."
 
 echo "Building FILEUPLOAD service..."
-cd services/fileupload-svc
+cd ./services/fileupload
 go build -o ../../build/fileupload main.go
 cd ../..
 
 echo "Building PRODUCT service..."
-cd services/product-svc
+cd ./services/product-svc
 go build -o ../../build/product main.go
 cd ../..
 
 echo "Building CUSTOMER service..."
-cd services/customer-svc
+cd ./services/customer-svc
 go build -o ../../build/customer main.go
 cd ../..
 
 echo "Building ORDER service..."
-cd services/order-svc
+cd ./services/order-svc
 go build -o ../../build/order main.go
 cd ../..
 
 echo "Building GATEWAY service..."
-cd grpc-gateway
+cd ./grpc-gateway
 go build -o ../build/gateway main.go
 cd ..
 
