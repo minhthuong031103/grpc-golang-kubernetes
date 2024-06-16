@@ -18,7 +18,3 @@ plugins:
   - plugin: buf.build/bufbuild/validate-go
     out: internal/generated
     opt: paths=source_relative
-  - plugin: buf.build/grpc-ecosystem/openapiv2:v2.19.1
-    out: api
-    opt:
-      - generate_unbound_methods=true

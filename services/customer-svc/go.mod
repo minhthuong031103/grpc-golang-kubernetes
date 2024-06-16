@@ -13,7 +13,7 @@ require (
 require (
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
-	github.com/kataras/jwt v0.1.12 // indirect
+	github.com/kataras/jwt v0.1.12
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	golang.org/x/net v0.23.0 // indirect
