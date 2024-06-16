@@ -11,10 +11,11 @@ import (
 var configFile []byte
 
 type Config struct {
-	Server      ServerConfig  `yaml:"server"`
-	CustomerSvc ServiceConfig `yaml:"customersvc"`
-	OrderSvc    ServiceConfig `yaml:"ordersvc"`
-	ProductSvc  ServiceConfig `yaml:"productsvc"`
+	Server            ServerConfig  `yaml:"server"`
+	FileUploadService ServiceConfig `yaml:"fileuploadsvc"`
+	CustomerSvc       ServiceConfig `yaml:"customersvc"`
+	OrderSvc          ServiceConfig `yaml:"ordersvc"`
+	ProductSvc        ServiceConfig `yaml:"productsvc"`
 }
 
 type ServerConfig struct {
@@ -34,6 +35,7 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal config data: %v", err)
 	}
 
+	config.FileUploadService.Address = fmt.Sprintf("%s:%d", config.FileUploadService.Host, config.FileUploadService.Port)
 	config.CustomerSvc.Address = fmt.Sprintf("%s:%d", config.CustomerSvc.Host, config.CustomerSvc.Port)
 	config.OrderSvc.Address = fmt.Sprintf("%s:%d", config.OrderSvc.Host, config.OrderSvc.Port)
 	config.ProductSvc.Address = fmt.Sprintf("%s:%d", config.ProductSvc.Host, config.ProductSvc.Port)

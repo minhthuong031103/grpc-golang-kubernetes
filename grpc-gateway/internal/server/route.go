@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	customerpb "gateway/internal/generated/customer"
+	fileuploadpb "gateway/internal/generated/fileupload"
 	orderpb "gateway/internal/generated/order"
 	productpb "gateway/internal/generated/product"
 
@@ -16,13 +17,18 @@ import (
 )
 
 // SetupRouter initializes and returns a new Gin router
-func SetupRouter(customerConn *grpc.ClientConn, productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
+func SetupRouter(fileuploadConn *grpc.ClientConn, customerConn *grpc.ClientConn, productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
 	router := gin.Default()
 
 	// Set up the gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
 
-	err := customerpb.RegisterCustomerServiceHandler(context.Background(), gwmux, customerConn)
+	err := fileuploadpb.RegisterFileUploadServiceHandler(context.Background(), gwmux, fileuploadConn)
+	if err != nil {
+		log.Fatalf("Failed to register FILEUPLOAD: %v", err)
+	}
+
+	err = customerpb.RegisterCustomerServiceHandler(context.Background(), gwmux, customerConn)
 	if err != nil {
 		log.Fatalf("Failed to register CUSTOMER: %v", err)
 	}
@@ -37,15 +43,13 @@ func SetupRouter(customerConn *grpc.ClientConn, productConn *grpc.ClientConn, or
 		log.Fatalf("Failed to register ORDER: %v", err)
 	}
 
-	// Standard HTTP routes
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
 	// Additional routes can be added here
 	router.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+
+	// File upload endpoint
+	router.POST("/upload", uploadFileHandler(fileuploadConn))
 
 	// Handle all requests using gRPC-Gateway with a specific prefix, e.g., `/api`
 	apiRoutes := router.Group("/api")

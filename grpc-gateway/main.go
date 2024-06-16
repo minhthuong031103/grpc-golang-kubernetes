@@ -16,6 +16,11 @@ func main() {
 
 	fmt.Printf("GATEWAY is trying serve on port: %d\n", cfg.Server.Port)
 
+	fileuploadclient := grpcclientconn.NewGRPCClient(cfg.FileUploadService.Address)
+	if err := fileuploadclient.Connect(); err != nil {
+		log.Fatalf("Failed to connect to file upload service: %v", err)
+	}
+
 	customerclient := grpcclientconn.NewGRPCClient(cfg.CustomerSvc.Address)
 	if err := customerclient.Connect(); err != nil {
 		log.Fatalf("Failed to connect to customer service: %v", err)
@@ -38,7 +43,7 @@ func main() {
 	defer orderclient.Disconnect()
 
 	// Set up the HTTP server with integrated gRPC-Gateway and Gin router
-	router := server.SetupRouter(customerclient.GetConnection(), productclient.GetConnection(), orderclient.GetConnection())
+	router := server.SetupRouter(fileuploadclient.GetConnection(), customerclient.GetConnection(), productclient.GetConnection(), orderclient.GetConnection())
 
 	fmt.Println("CUSTOMER SERVICE ADDRESS: ", cfg.CustomerSvc.Address)
 

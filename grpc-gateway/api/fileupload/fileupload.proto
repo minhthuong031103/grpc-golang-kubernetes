@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+service FileUploadService {
+  rpc UploadFile(UploadRequest) returns (UploadResponse) {
+      option (google.api.http) = {
+          post: "/upload",
+          body: "data"
+      };
+  }
+}
+
+message UploadRequest {
+  string filename = 1;
+  bytes data = 2;  
+}
+
+message UploadResponse {
+  string url = 1; 
+}
