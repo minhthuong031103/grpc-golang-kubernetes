@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/go,jetbrains,macos,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=go,jetbrains,macos,windows
+# PROJECT IGNORE
+/services/fileupload/config/config.yaml
 
 ### Go ###
 # If you prefer the allow list template instead of the deny list, see community template:

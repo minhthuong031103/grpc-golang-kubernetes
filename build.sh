@@ -5,6 +5,11 @@
 echo "Working directory: $(pwd)"
 echo "Building services..."
 
+echo "Building FILEUPLOAD service..."
+cd services/fileupload-svc
+go build -o ../../build/fileupload main.go
+cd ../..
+
 echo "Building PRODUCT service..."
 cd services/product-svc
 go build -o ../../build/product main.go

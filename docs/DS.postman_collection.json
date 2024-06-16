@@ -203,6 +203,30 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Upload",
+			"item": [
+				{
+					"name": "Upload File",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/quocbv/Downloads/0.png"
+								}
+							]
+						},
+						"url": "{{base_url}}upload"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
