@@ -4,13 +4,13 @@ import "google/api/annotations.proto";
 option go_package = "productsvc/api/product/v1";
 
 service ProductService {
-  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {
+  rpc CreateProduct (CreateProductRequest) returns (Product) {
     option (google.api.http) = {
       post: "/product"
       body: "*"
     };
   }
-  rpc GetProduct (GetProductRequest) returns (GetProductResponse) {
+  rpc GetProduct (GetProductRequest) returns (Product) {
     option (google.api.http) = {
       get: "/product/{product_id}"
     };
@@ -20,9 +20,9 @@ service ProductService {
       get: "/products"
     };
   }
-  rpc UpdateProductQuantityAndSold (UpdateProductQuantityAndSoldRequest) returns (UpdateProductQuantityAndSoldResponse) {
+  rpc UpdateProductQuantityAndSold (UpdateProductQuantityAndSoldRequest) returns (Product) {
     option (google.api.http) = {
-      put: "/product/{product_id}"
+      put: "/product/{product_id}/quantity-sold"
       body: "*"
     };
   }
@@ -43,29 +43,14 @@ message CreateProductRequest {
   double price = 2;
   string description = 3;
   int32 quantity = 4;
-  int32 sold = 5;
-}
-
-message CreateProductResponse {
-  string product_id = 1;
+  string image_url = 5;
 }
 
 message GetProductRequest {
   string product_id = 1;
 }
 
-message GetProductResponse {
-  string product_id = 1;
-  string product_name = 2;
-  double price = 3;
-  string description = 4;
-  int32 quantity = 5;
-  int32 sold = 6;
-  string image_url = 7;
-}
-
 message GetAllProductsRequest {}
-
 message GetAllProductsResponse {
   repeated Product products = 1;
 }
@@ -75,10 +60,3 @@ message UpdateProductQuantityAndSoldRequest {
   int32 quantity = 2;
   int32 sold = 3;
 }
-
-message UpdateProductQuantityAndSoldResponse {
-  string product_id = 1;
-  int32 quantity = 2;
-  int32 sold = 3;
-}
-

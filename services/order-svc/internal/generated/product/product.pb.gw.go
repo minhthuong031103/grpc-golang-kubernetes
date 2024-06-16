@@ -276,7 +276,7 @@ func RegisterProductServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ProductService/UpdateProductQuantityAndSold", runtime.WithHTTPPathPattern("/product/{product_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ProductService/UpdateProductQuantityAndSold", runtime.WithHTTPPathPattern("/product/{product_id}/quantity-sold"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -406,7 +406,7 @@ func RegisterProductServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/.ProductService/UpdateProductQuantityAndSold", runtime.WithHTTPPathPattern("/product/{product_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/.ProductService/UpdateProductQuantityAndSold", runtime.WithHTTPPathPattern("/product/{product_id}/quantity-sold"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -432,7 +432,7 @@ var (
 
 	pattern_ProductService_GetAllProducts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"products"}, ""))
 
-	pattern_ProductService_UpdateProductQuantityAndSold_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"product", "product_id"}, ""))
+	pattern_ProductService_UpdateProductQuantityAndSold_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"product", "product_id", "quantity-sold"}, ""))
 )
 
 var (

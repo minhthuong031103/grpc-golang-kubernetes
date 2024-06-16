@@ -29,10 +29,10 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
-	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
-	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
+	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*Product, error)
+	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*Product, error)
 	GetAllProducts(ctx context.Context, in *GetAllProductsRequest, opts ...grpc.CallOption) (*GetAllProductsResponse, error)
-	UpdateProductQuantityAndSold(ctx context.Context, in *UpdateProductQuantityAndSoldRequest, opts ...grpc.CallOption) (*UpdateProductQuantityAndSoldResponse, error)
+	UpdateProductQuantityAndSold(ctx context.Context, in *UpdateProductQuantityAndSoldRequest, opts ...grpc.CallOption) (*Product, error)
 }
 
 type productServiceClient struct {
@@ -43,9 +43,9 @@ func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 	return &productServiceClient{cc}
 }
 
-func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
+func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*Product, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateProductResponse)
+	out := new(Product)
 	err := c.cc.Invoke(ctx, ProductService_CreateProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -53,9 +53,9 @@ func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProd
 	return out, nil
 }
 
-func (c *productServiceClient) GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error) {
+func (c *productServiceClient) GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*Product, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetProductResponse)
+	out := new(Product)
 	err := c.cc.Invoke(ctx, ProductService_GetProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -73,9 +73,9 @@ func (c *productServiceClient) GetAllProducts(ctx context.Context, in *GetAllPro
 	return out, nil
 }
 
-func (c *productServiceClient) UpdateProductQuantityAndSold(ctx context.Context, in *UpdateProductQuantityAndSoldRequest, opts ...grpc.CallOption) (*UpdateProductQuantityAndSoldResponse, error) {
+func (c *productServiceClient) UpdateProductQuantityAndSold(ctx context.Context, in *UpdateProductQuantityAndSoldRequest, opts ...grpc.CallOption) (*Product, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateProductQuantityAndSoldResponse)
+	out := new(Product)
 	err := c.cc.Invoke(ctx, ProductService_UpdateProductQuantityAndSold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -87,10 +87,10 @@ func (c *productServiceClient) UpdateProductQuantityAndSold(ctx context.Context,
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
-	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
-	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
+	CreateProduct(context.Context, *CreateProductRequest) (*Product, error)
+	GetProduct(context.Context, *GetProductRequest) (*Product, error)
 	GetAllProducts(context.Context, *GetAllProductsRequest) (*GetAllProductsResponse, error)
-	UpdateProductQuantityAndSold(context.Context, *UpdateProductQuantityAndSoldRequest) (*UpdateProductQuantityAndSoldResponse, error)
+	UpdateProductQuantityAndSold(context.Context, *UpdateProductQuantityAndSoldRequest) (*Product, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -98,16 +98,16 @@ type ProductServiceServer interface {
 type UnimplementedProductServiceServer struct {
 }
 
-func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
+func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServiceServer) GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error) {
+func (UnimplementedProductServiceServer) GetProduct(context.Context, *GetProductRequest) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
 }
 func (UnimplementedProductServiceServer) GetAllProducts(context.Context, *GetAllProductsRequest) (*GetAllProductsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllProducts not implemented")
 }
-func (UnimplementedProductServiceServer) UpdateProductQuantityAndSold(context.Context, *UpdateProductQuantityAndSoldRequest) (*UpdateProductQuantityAndSoldResponse, error) {
+func (UnimplementedProductServiceServer) UpdateProductQuantityAndSold(context.Context, *UpdateProductQuantityAndSoldRequest) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductQuantityAndSold not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}

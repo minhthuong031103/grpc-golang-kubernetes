@@ -8,7 +8,7 @@ import (
 	"github.com/gocql/gocql"
 )
 
-func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.Product, error) {
 	productID := gocql.TimeUUID()
 	product := dal.Product{
 		ProductID:   productID,
@@ -16,17 +16,17 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 		Price:       req.Price,
 		Description: req.Description,
 		Quantity:    req.Quantity,
-		Sold:        req.Sold,
+		Sold:        0,
 		ImageURL:    defaultImageURL,
 	}
 	err := s.ProductDAL.CreateProduct(product)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.CreateProductResponse{ProductId: productID.String()}, nil
+	return &pb.Product{ProductId: productID.String()}, nil
 }
 
-func (s *Server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.GetProductResponse, error) {
+func (s *Server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
 	productID, err := gocql.ParseUUID(req.ProductId)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (s *Server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetProductResponse{
+	return &pb.Product{
 		ProductId:   product.ProductID.String(),
 		ProductName: product.ProductName,
 		Price:       product.Price,
@@ -66,7 +66,7 @@ func (s *Server) GetAllProducts(ctx context.Context, req *pb.GetAllProductsReque
 	return &pb.GetAllProductsResponse{Products: productResponses}, nil
 }
 
-func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.UpdateProductQuantityAndSoldRequest) (*pb.UpdateProductQuantityAndSoldResponse, error) {
+func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.UpdateProductQuantityAndSoldRequest) (*pb.Product, error) {
 	productID, err := gocql.ParseUUID(req.ProductId)
 	if err != nil {
 		return nil, err
@@ -81,9 +81,13 @@ func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.Updat
 		return nil, err
 	}
 
-	return &pb.UpdateProductQuantityAndSoldResponse{
-		ProductId: updatedProduct.ProductID.String(),
-		Quantity:  updatedProduct.Quantity,
-		Sold:      updatedProduct.Sold,
+	return &pb.Product{
+		ProductId:   updatedProduct.ProductID.String(),
+		ProductName: updatedProduct.ProductName,
+		Description: updatedProduct.Description,
+		Price:       updatedProduct.Price,
+		Quantity:    updatedProduct.Quantity,
+		Sold:        updatedProduct.Sold,
+		ImageUrl:    updatedProduct.ImageURL,
 	}, nil
 }

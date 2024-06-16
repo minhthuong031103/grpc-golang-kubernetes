@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CreateProductResponse"
+              "$ref": "#/definitions/Product"
             }
           },
           "default": {
@@ -55,7 +55,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/GetProductResponse"
+              "$ref": "#/definitions/Product"
             }
           },
           "default": {
@@ -76,14 +76,16 @@
         "tags": [
           "ProductService"
         ]
-      },
+      }
+    },
+    "/product/{productId}/quantity-sold": {
       "put": {
         "operationId": "ProductService_UpdateProductQuantityAndSold",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/UpdateProductQuantityAndSoldResponse"
+              "$ref": "#/definitions/Product"
             }
           },
           "default": {
@@ -155,16 +157,7 @@
           "type": "integer",
           "format": "int32"
         },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "CreateProductResponse": {
-      "type": "object",
-      "properties": {
-        "productId": {
+        "imageUrl": {
           "type": "string"
         }
       }
@@ -178,35 +171,6 @@
             "type": "object",
             "$ref": "#/definitions/Product"
           }
-        }
-      }
-    },
-    "GetProductResponse": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "productName": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "description": {
-          "type": "string"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "imageUrl": {
-          "type": "string"
         }
       }
     },
@@ -242,22 +206,6 @@
     "ProductServiceUpdateProductQuantityAndSoldBody": {
       "type": "object",
       "properties": {
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "sold": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "UpdateProductQuantityAndSoldResponse": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
         "quantity": {
           "type": "integer",
           "format": "int32"
