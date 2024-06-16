@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	customerpb "gateway/internal/generated/customer"
 	orderpb "gateway/internal/generated/order"
 	productpb "gateway/internal/generated/product"
 
@@ -15,15 +16,22 @@ import (
 )
 
 // SetupRouter initializes and returns a new Gin router
-func SetupRouter(productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
+func SetupRouter(customerConn *grpc.ClientConn, productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
 	router := gin.Default()
 
 	// Set up the gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
-	err := productpb.RegisterProductServiceHandler(context.Background(), gwmux, productConn)
+
+	err := customerpb.RegisterCustomerServiceHandler(context.Background(), gwmux, customerConn)
+	if err != nil {
+		log.Fatalf("Failed to register CUSTOMER: %v", err)
+	}
+
+	err = productpb.RegisterProductServiceHandler(context.Background(), gwmux, productConn)
 	if err != nil {
 		log.Fatalf("Failed to register PRODUCT: %v", err)
 	}
+
 	err = orderpb.RegisterOrdersHandler(context.Background(), gwmux, orderConn)
 	if err != nil {
 		log.Fatalf("Failed to register ORDER: %v", err)
@@ -45,6 +53,5 @@ func SetupRouter(productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.
 		ctx.Request.URL.Path = strings.TrimPrefix(ctx.Request.URL.Path, "/api")
 		ctx.Next()
 	}, gin.WrapH(gwmux))
-
 	return router
 }

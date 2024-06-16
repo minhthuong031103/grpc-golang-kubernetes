@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+customersvc:
+  host: "localhost"
+  port: 50050
+
 ordersvc:
   host: "localhost"
   port: 50051

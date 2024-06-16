@@ -24,7 +24,7 @@ func NewCustomerDAL(session *gocql.Session) *CustomerDAL {
 
 func (dal *CustomerDAL) CreateCustomer(user Customer) error {
 	err := dal.Session.Query(`INSERT INTO "customer" (CustomerId, Name, Email, Password, tokenstr) VALUES (?, ?, ?, ?, ?)`,
-		user.CustomerId, user.Name, user.Email, user.Password, user.Token).Exec()
+		gocql.TimeUUID(), user.Name, user.Email, user.Password, user.Token).Exec()
 	if err != nil {
 		log.Printf("Failed to create customer: %v", err)
 		return err
@@ -37,7 +37,7 @@ func (dal *CustomerDAL) GetCustomerByEmail(email string) (*Customer, error) {
 	err := dal.Session.Query(`SELECT customerid, name, email, password, tokenstr FROM customer WHERE email = ? ALLOW FILTERING`, email).Scan(
 		&customer.CustomerId, &customer.Name, &customer.Email, &customer.Password, &customer.Token)
 	if err != nil {
-		log.Printf("Failed to get customer by email: %v", err)
+		log.Printf("Failed to get customer by email %s: %v", email, err)
 		return nil, err
 	}
 
