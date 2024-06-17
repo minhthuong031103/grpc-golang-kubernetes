@@ -11,6 +11,7 @@ import (
 	orderpb "gateway/internal/generated/order"
 	productpb "gateway/internal/generated/product"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -19,7 +20,12 @@ import (
 // SetupRouter initializes and returns a new Gin router
 func SetupRouter(fileuploadConn *grpc.ClientConn, customerConn *grpc.ClientConn, productConn *grpc.ClientConn, orderConn *grpc.ClientConn) *gin.Engine {
 	router := gin.Default()
-
+	// Set up CORS middleware
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization"},
+	}))
 	// Set up the gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
 
