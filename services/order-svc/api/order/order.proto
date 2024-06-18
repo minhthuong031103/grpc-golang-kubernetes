@@ -2,61 +2,80 @@ syntax = "proto3";
 
 import "product/product.proto";
 import "google/api/annotations.proto";
-option go_package = "ordersvc/api/order/v1";
+option go_package = "ordersvc/api/order";
 
-message OrderDetails {
-  string order_id = 1;
-  repeated Product products = 2;
-  repeated int32 quantities = 3;
-  double total = 4;
-  string order_date = 5;
-  string email = 6;
-  string shipping_address = 7;
-  string status = 8;
-}
-
-message Empty {}
-message PayloadWithSingleOrder {
-  OrderDetails order = 1;
-}
-message PayloadWithOrderID {
-  string order_id = 1;
-}
-
-message ListOrderDetailsResponse {
-  repeated OrderDetails orders = 1;
-}
-
-
-service Orders {
-  rpc AddOrder(PayloadWithSingleOrder) returns (Empty) {
+// OrderService defines the service for handling orders.
+service OrderService {
+  rpc CreateOrder (CreateOrderRequest) returns (Order) {
     option (google.api.http) = {
-      post: "/orders",
+      post: "/orders"
       body: "*"
     };
   }
-  rpc ListOrders(Empty) returns (ListOrderDetailsResponse) {
+  rpc GetOrder (GetOrderRequest) returns (Order) {
     option (google.api.http) = {
-      get: "/orders",
+      get: "/orders/{order_id}"
     };
   }
-
-  rpc GetOrder(PayloadWithOrderID) returns (PayloadWithSingleOrder) {
+  rpc GetAllOrders (GetAllOrdersRequest) returns (GetAllOrdersResponse) {
     option (google.api.http) = {
-      get: "/orders/{order_id}",
+      get: "/orders"
     };
   }
-  rpc UpdateOrder(PayloadWithSingleOrder) returns (Empty) {
+  rpc UpdateOrderStatus (UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse) {
     option (google.api.http) = {
-      put: "/orders",
+      patch: "/orders/{order_id}/status"
       body: "*"
     };
   }
-  rpc RemoveOrder(PayloadWithOrderID) returns (Empty) {
-    option (google.api.http) = {
-      delete: "/orders/{order_id}",
-    };
-  }
+}
 
+// Order represents the structure of an order.
+message Order {
+  string order_id = 1;
+  string customer_id = 2;
+  repeated OrderItem items = 3;
+  double total_price = 4;
+  string status = 5; // For example: "pending", "shipped", "delivered", "cancelled"
+  string order_date = 6; // ISO8601 formatted date string
+  string created_at = 7; // ISO8601 formatted date string
+  string updated_at = 8; // ISO8601 formatted date string
+}
 
+// OrderItem represents a line item in an order.
+message OrderItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+// CreateOrderRequest is the request format for creating an order.
+message CreateOrderRequest {
+  string customer_id = 1;
+  repeated OrderItem items = 2;
+}
+
+// GetOrderRequest is the request format for retrieving a single order by ID.
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+// GetAllOrdersRequest is the request format for retrieving all orders.
+message GetAllOrdersRequest {}
+
+// GetAllOrdersResponse is the response format for retrieving all orders.
+message GetAllOrdersResponse {
+  repeated Order orders = 1;
+}
+
+// UpdateOrderStatusRequest is the request format for updating the status of an order.
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  string status = 2;
+}
+
+message UpdateOrderStatusResponse {
+  string order_id = 1;
+  string status = 2;
 }

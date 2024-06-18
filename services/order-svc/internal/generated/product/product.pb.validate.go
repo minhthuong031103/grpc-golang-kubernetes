@@ -70,6 +70,12 @@ func (m *Product) validate(all bool) error {
 
 	// no validation rules for ImageUrl
 
+	// no validation rules for CreatedAt
+
+	// no validation rules for UpdatedAt
+
+	// no validation rules for DeletedAt
+
 	if len(errors) > 0 {
 		return ProductMultiError(errors)
 	}

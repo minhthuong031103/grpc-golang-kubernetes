@@ -5,20 +5,21 @@ import (
 	"log"
 	"net"
 
-	productclient "ordersvc/internal/client/product"
+	grpcclientconn "ordersvc/internal/connection"
 	dal "ordersvc/internal/dal"
 	pb "ordersvc/internal/generated/order"
+	productpb "ordersvc/internal/generated/product"
 
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	pb.UnimplementedOrdersServer
+	pb.UnimplementedOrderServiceServer
 	OrderDAL      *dal.OrderDAL
-	ProductClient *productclient.ProductClient
+	ProductClient productpb.ProductServiceClient
 }
 
-func StartGRPCServer(port int, productClient *productclient.ProductClient, orderDAL *dal.OrderDAL) {
+func StartGRPCServer(port int, productClientConn *grpcclientconn.GRPCClient, orderDAL *dal.OrderDAL) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -26,7 +27,9 @@ func StartGRPCServer(port int, productClient *productclient.ProductClient, order
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(UnaryInterceptor),
 	)
-	pb.RegisterOrdersServer(grpcServer, &Server{
+
+	productClient := productpb.NewProductServiceClient(productClientConn.GetConnection())
+	pb.RegisterOrderServiceServer(grpcServer, &Server{
 		OrderDAL:      orderDAL,
 		ProductClient: productClient})
 
@@ -34,4 +37,5 @@ func StartGRPCServer(port int, productClient *productclient.ProductClient, order
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
 }

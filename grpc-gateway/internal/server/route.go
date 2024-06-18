@@ -44,7 +44,7 @@ func SetupRouter(fileuploadConn *grpc.ClientConn, customerConn *grpc.ClientConn,
 		log.Fatalf("Failed to register PRODUCT: %v", err)
 	}
 
-	err = orderpb.RegisterOrdersHandler(context.Background(), gwmux, orderConn)
+	err = orderpb.RegisterOrderServiceHandler(context.Background(), gwmux, orderConn)
 	if err != nil {
 		log.Fatalf("Failed to register ORDER: %v", err)
 	}

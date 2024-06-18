@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"ordersvc/config"
-	productclient "ordersvc/internal/client/product"
+	grpcclientconn "ordersvc/internal/connection"
 	orderdal "ordersvc/internal/dal"
 	"ordersvc/internal/server"
 
@@ -32,7 +32,7 @@ func main() {
 	orderDAL := orderdal.NewOrderDAL(session)
 
 	productAddress := fmt.Sprintf("%v:%v", config.ProductSvc.Host, config.ProductSvc.Port)
-	productClientConn := productclient.NewProductClient(productAddress)
+	productClientConn := grpcclientconn.NewGRPCClient(productAddress)
 	if err := productClientConn.Connect(); err != nil {
 		log.Fatalf("Failed to connect to product service: %v", err)
 	}

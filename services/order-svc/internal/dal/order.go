@@ -2,19 +2,28 @@ package order
 
 import (
 	"log"
+	"ordersvc/internal/helper"
 
 	"github.com/gocql/gocql"
 )
 
 type Order struct {
-	OrderId         gocql.UUID
-	ProductIDs      []gocql.UUID
-	Quantities      []int32
-	Total           float64
-	OrderDate       string
-	Email           string
-	ShippingAddress string
-	Status          string
+	OrderId    gocql.UUID
+	CustomerId gocql.UUID
+	OrderDate  string
+	Status     string
+	TotalPrice float64
+	Products   []OrderItem
+	CreatedAt  string
+	UpdatedAt  string
+	DeletedAt  string
+}
+
+type OrderItem struct {
+	ProductId   gocql.UUID
+	ProductName string
+	Quantity    int32
+	Price       float64
 }
 
 type OrderDAL struct {
@@ -25,31 +34,87 @@ func NewOrderDAL(session *gocql.Session) *OrderDAL {
 	return &OrderDAL{Session: session}
 }
 
-// CreateOrder inserts a new order into the order table
 func (dal *OrderDAL) CreateOrder(order Order) error {
-	err := dal.Session.Query(`INSERT INTO "order" (OrderId, ProductIDs, Quantities, Total, OrderDate, Email, ShippingAddress, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		order.OrderId, order.ProductIDs, order.Quantities, order.Total, order.OrderDate, order.Email, order.ShippingAddress, order.Status).Exec()
+	// Convert OrderItems to a list of maps
+	var products []map[string]interface{}
+	for _, item := range order.Products {
+		products = append(products, map[string]interface{}{
+			"product_id":   item.ProductId,
+			"product_name": item.ProductName,
+			"quantity":     item.Quantity,
+			"price":        item.Price,
+		})
+	}
+
+	// Insert order into the orders table
+	err := dal.Session.Query(`INSERT INTO orders (order_id, customer_id, order_date, status, total_price, products, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		order.OrderId, order.CustomerId, order.OrderDate, order.Status, order.TotalPrice, products, order.CreatedAt, order.UpdatedAt, order.DeletedAt).Exec()
 	if err != nil {
 		log.Printf("Failed to create order: %v", err)
 		return err
 	}
+
 	return nil
 }
 
-// GetAllOrders retrieves all orders from the order table
-func (dal *OrderDAL) GetAllOrders() ([]Order, error) {
-	var orders []Order
-	iter := dal.Session.Query(`SELECT OrderId, ProductIDs, Quantities, Total, OrderDate, Email, ShippingAddress, Status FROM "order"`).Iter()
-	defer iter.Close()
-
+func (dal *OrderDAL) GetOrder(orderId gocql.UUID) (*Order, error) {
+	// Retrieve the order
 	var order Order
-	for iter.Scan(&order.OrderId, &order.ProductIDs, &order.Quantities, &order.Total, &order.OrderDate, &order.Email, &order.ShippingAddress, &order.Status) {
-		orders = append(orders, order)
-	}
-	if err := iter.Close(); err != nil {
-		log.Printf("Failed to get all orders: %v", err)
+	var products []map[string]interface{}
+	err := dal.Session.Query(`SELECT order_id, customer_id, order_date, status, total_price, products, created_at, updated_at, deleted_at
+	FROM orders WHERE order_id = ?`,
+		orderId).Scan(&order.OrderId, &order.CustomerId, &order.OrderDate, &order.Status, &order.TotalPrice, &products, &order.CreatedAt, &order.UpdatedAt, &order.DeletedAt)
+	if err != nil {
+		log.Printf("Failed to get order: %v", err)
 		return nil, err
 	}
 
+	// Convert products to OrderItem structs
+	for _, p := range products {
+		order.Products = append(order.Products, OrderItem{
+			ProductId:   p["product_id"].(gocql.UUID),
+			ProductName: p["product_name"].(string),
+			Quantity:    int32(p["quantity"].(int)),
+			Price:       p["price"].(float64),
+		})
+	}
+
+	return &order, nil
+}
+
+func (dal *OrderDAL) GetAllOrders() ([]Order, error) {
+	// Retrieve all orders
+	var orders []Order
+	iter := dal.Session.Query(`SELECT order_id, customer_id, order_date, status, total_price, products, created_at, updated_at, deleted_at FROM orders`).Iter()
+	for {
+		var order Order
+		var products []map[string]interface{}
+		if !iter.Scan(&order.OrderId, &order.CustomerId, &order.OrderDate, &order.Status, &order.TotalPrice, &products, &order.CreatedAt, &order.UpdatedAt, &order.DeletedAt) {
+			break
+		}
+
+		// Convert products to OrderItem structs
+		for _, p := range products {
+			order.Products = append(order.Products, OrderItem{
+				ProductId:   p["product_id"].(gocql.UUID),
+				ProductName: p["product_name"].(string),
+				Quantity:    int32(p["quantity"].(int)),
+				Price:       p["price"].(float64),
+			})
+		}
+
+		orders = append(orders, order)
+	}
+
 	return orders, nil
+}
+
+func (dal *OrderDAL) UpdateOrderStatus(orderId gocql.UUID, status string) error {
+	err := dal.Session.Query(`UPDATE orders SET status = ? updated_at = ?	 WHERE order_id = ?`, status, helper.GetCreatedAt(), orderId).Exec()
+	if err != nil {
+		log.Printf("Failed to update order status: %v", err)
+		return err
+	}
+
+	return nil
 }

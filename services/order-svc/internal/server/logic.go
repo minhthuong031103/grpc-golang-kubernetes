@@ -1,88 +1,142 @@
-// package server
-
-// import (
-// 	"context"
-// 	pb "ordersvc/internal/generated/order"
-// 	productpb "ordersvc/internal/generated/product"
-// )
-
-// func (s *Server) ListOrders(ctx context.Context, req *pb.Empty) (*pb.ListOrderDetailsResponse, error) {
-// 	orders, err := s.OrderDAL.GetAllOrders()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var pbOrders []*pb.OrderDetails
-// 	for _, order := range orders {
-// 		pbOrder := &pb.OrderDetails{
-// 			OrderId:         order.OrderId.String(),
-// 			Products:        []*productpb.Product{},
-// 			Quantities:      order.Quantities,
-// 			Total:           order.Total,
-// 			OrderDate:       order.OrderDate,
-// 			Email:           order.Email,
-// 			ShippingAddress: order.ShippingAddress,
-// 			Status:          order.Status,
-// 		}
-
-// 		pbOrders = append(pbOrders, pbOrder)
-// 	}
-// 	return &pb.ListOrderDetailsResponse{
-// 		Orders: pbOrders,
-// 	}, nil
-// }
-
 package server
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/gocql/gocql"
+	"google.golang.org/grpc/status"
+
+	dal "ordersvc/internal/dal"
 	pb "ordersvc/internal/generated/order"
-	productpb "ordersvc/internal/generated/product"
-	"time"
+	"ordersvc/internal/helper"
 )
 
-func (s *Server) ListOrders(ctx context.Context, req *pb.Empty) (*pb.ListOrderDetailsResponse, error) {
-	orders, err := s.OrderDAL.GetAllOrders()
+func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*pb.Order, error) {
+	// Generate a new UUID for the order
+	customerId, err := gocql.ParseUUID(req.CustomerId)
 	if err != nil {
 		return nil, err
 	}
 
-	var pbOrders []*pb.OrderDetails
-	for _, order := range orders {
-		pbOrder := &pb.OrderDetails{
-			OrderId:         order.OrderId.String(),
-			Products:        []*productpb.Product{},
-			Quantities:      order.Quantities,
-			Total:           order.Total,
-			OrderDate:       order.OrderDate,
-			Email:           order.Email,
-			ShippingAddress: order.ShippingAddress,
-			Status:          order.Status,
-		}
-
-		productClient := productpb.NewProductServiceClient(s.ProductClient.GetConnection())
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		for _, productID := range order.ProductIDs {
-			id := productID.String()
-			getRes, err := productClient.GetProduct(ctx, &productpb.GetProductRequest{
-				ProductId: id,
-			})
-			if err != nil {
-				return nil, err
-			}
-			pbOrder.Products = append(pbOrder.Products, &productpb.Product{
-				ProductId:   getRes.ProductId,
-				ProductName: getRes.ProductName,
-				Price:       getRes.Price,
-				Description: getRes.Description,
-				Quantity:    getRes.Quantity,
-				Sold:        getRes.Sold,
-			})
-		}
-		pbOrders = append(pbOrders, pbOrder)
+	dalOrder := dal.Order{
+		OrderId:    gocql.TimeUUID(),
+		CustomerId: customerId,
+		OrderDate:  helper.GetCreatedAt(),
+		Status:     "pending",
+		TotalPrice: 0,
+		Products:   make([]dal.OrderItem, 0),
+		CreatedAt:  helper.GetCreatedAt(),
+		UpdatedAt:  helper.GetCreatedAt(),
+		DeletedAt:  "",
 	}
-	return &pb.ListOrderDetailsResponse{
-		Orders: pbOrders,
+
+	for _, item := range req.Items {
+		dalOrder.TotalPrice += float64(item.Quantity) * item.Price
+		productId, err := gocql.ParseUUID(item.ProductId)
+		if err != nil {
+			return nil, err
+		}
+		dalOrder.Products = append(dalOrder.Products, dal.OrderItem{
+			ProductId:   productId,
+			ProductName: item.ProductName,
+			Quantity:    item.Quantity,
+			Price:       item.Price,
+		})
+	}
+
+	err = s.OrderDAL.CreateOrder(dalOrder)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Order{
+		OrderId:    dalOrder.OrderId.String(),
+		CustomerId: dalOrder.CustomerId.String(),
+		OrderDate:  dalOrder.OrderDate,
+		Status:     dalOrder.Status,
+		TotalPrice: dalOrder.TotalPrice,
+		Items:      req.Items,
+		CreatedAt:  dalOrder.CreatedAt,
+		UpdatedAt:  dalOrder.UpdatedAt,
+	}, nil
+}
+
+func (s *Server) GetAllOrders(ctx context.Context, req *pb.GetAllOrdersRequest) (*pb.GetAllOrdersResponse, error) {
+	var orders []*pb.Order
+
+	allOrder, err := s.OrderDAL.GetAllOrders()
+	if err != nil {
+		fmt.Print(err)
+		return nil, status.Errorf(http.StatusInternalServerError, "Cant get data from db")
+	}
+
+	for _, order := range allOrder {
+		orders = append(orders, &pb.Order{
+			OrderId:    order.OrderId.String(),
+			CustomerId: order.CustomerId.String(),
+			Items:      make([]*pb.OrderItem, 0),
+			TotalPrice: order.TotalPrice,
+			Status:     order.Status,
+			OrderDate:  order.OrderDate,
+		})
+	}
+	return &pb.GetAllOrdersResponse{Orders: orders}, nil
+}
+
+func (s *Server) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.Order, error) {
+	orderId, err := gocql.ParseUUID(req.OrderId)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err := s.OrderDAL.GetOrder(orderId)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]*pb.OrderItem, 0)
+	for _, item := range order.Products {
+		items = append(items, &pb.OrderItem{
+			ProductId:   item.ProductId.String(),
+			ProductName: item.ProductName,
+			Quantity:    item.Quantity,
+			Price:       item.Price,
+		})
+	}
+
+	return &pb.Order{
+		OrderId:    order.OrderId.String(),
+		CustomerId: order.CustomerId.String(),
+		Items:      items,
+		TotalPrice: order.TotalPrice,
+		Status:     order.Status,
+		OrderDate:  order.OrderDate,
+	}, nil
+}
+
+func (s *Server) UpdateOrderStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.UpdateOrderStatusResponse, error) {
+	orderId, err := gocql.ParseUUID(req.OrderId)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err := s.OrderDAL.GetOrder(orderId)
+	if err != nil {
+		return nil, err
+	}
+
+	order.Status = req.Status
+	order.UpdatedAt = helper.GetCreatedAt()
+
+	err = s.OrderDAL.UpdateOrderStatus(orderId, req.Status)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateOrderStatusResponse{
+		OrderId: order.OrderId.String(),
+		Status:  order.Status,
 	}, nil
 }

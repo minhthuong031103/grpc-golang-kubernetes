@@ -151,24 +151,6 @@
 					"response": []
 				},
 				{
-					"name": "Create Product",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"productName\": \"MyProduct\",\n    \"price\": 8888,\n    \"description\": \"A versatile tablet.\",\n    \"quantity\": 8889,\n    \"sold\": 0,\n    \"imageUrl\": \"https://cdn3d.iconscout.com/3d/premium/thumb/product-5806313-4863042.png\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{base_url}}api/product"
-					},
-					"response": []
-				},
-				{
 					"name": "Update Product quantity&sold",
 					"request": {
 						"method": "PUT",
@@ -199,6 +181,38 @@
 								}
 							]
 						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": \"5c1c4ba8-2bc7-11ef-b17b-fa86668df8a8\",\n    \"items\": [\n        {\n            \"productId\": \"cb8740dc-3733-438e-965b-ebc071cc34dc\",\n            \"productName\": \"Smartphone\",\n            \"price\": 599,\n            \"quantity\": 3\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}api/orders"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}api/orders"
 					},
 					"response": []
 				}
