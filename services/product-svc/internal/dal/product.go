@@ -14,6 +14,9 @@ type Product struct {
 	Quantity    int32
 	Sold        int32
 	ImageURL    string
+	CreatedAt   string
+	UpdatedAt   string
+	DeletedAt   string
 }
 
 type ProductDAL struct {
@@ -25,8 +28,8 @@ func NewProductDAL(session *gocql.Session) *ProductDAL {
 }
 
 func (dal *ProductDAL) CreateProduct(product Product) error {
-	err := dal.Session.Query(`INSERT INTO product (product_id, product_name, price, description, quantity, sold, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		product.ProductID, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageURL).Exec()
+	err := dal.Session.Query(`INSERT INTO product (product_id, product_name, price, description, quantity, sold, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		product.ProductID, product.ProductName, product.Price, product.Description, product.Quantity, product.Sold, product.ImageURL, product.CreatedAt).Exec()
 	if err != nil {
 		log.Printf("Failed to create product: %v", err)
 		return err
@@ -36,8 +39,8 @@ func (dal *ProductDAL) CreateProduct(product Product) error {
 
 func (dal *ProductDAL) GetProductByID(productID gocql.UUID) (*Product, error) {
 	var product Product
-	err := dal.Session.Query(`SELECT product_id, product_name, price, description, quantity, sold, image_url FROM product WHERE product_id = ?`,
-		productID).Scan(&product.ProductID, &product.ProductName, &product.Price, &product.Description, &product.Quantity, &product.Sold, &product.ImageURL)
+	err := dal.Session.Query(`SELECT product_id, product_name, price, description, quantity, sold, image_url, created_at FROM product WHERE product_id = ?`,
+		productID).Scan(&product.ProductID, &product.ProductName, &product.Price, &product.Description, &product.Quantity, &product.Sold, &product.ImageURL, &product.CreatedAt)
 	if err != nil {
 		log.Printf("Failed to get product by ID: %v", err)
 		return nil, err
@@ -47,11 +50,11 @@ func (dal *ProductDAL) GetProductByID(productID gocql.UUID) (*Product, error) {
 
 func (dal *ProductDAL) GetAllProducts() ([]Product, error) {
 	var products []Product
-	iter := dal.Session.Query(`SELECT product_id, product_name, price, description, quantity, sold, image_url FROM product`).Iter()
+	iter := dal.Session.Query(`SELECT product_id, product_name, price, description, quantity, sold, image_url, created_at FROM product`).Iter()
 	defer iter.Close()
 
 	var product Product
-	for iter.Scan(&product.ProductID, &product.ProductName, &product.Price, &product.Description, &product.Quantity, &product.Sold, &product.ImageURL) {
+	for iter.Scan(&product.ProductID, &product.ProductName, &product.Price, &product.Description, &product.Quantity, &product.Sold, &product.ImageURL, &product.CreatedAt) {
 		products = append(products, product)
 	}
 	if err := iter.Close(); err != nil {

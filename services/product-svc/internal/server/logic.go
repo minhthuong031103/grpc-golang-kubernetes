@@ -4,12 +4,16 @@ import (
 	"context"
 	"productsvc/internal/dal"
 	pb "productsvc/internal/generated/product"
+	"productsvc/internal/helper"
 
 	"github.com/gocql/gocql"
 )
 
 func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.Product, error) {
 	productID := gocql.TimeUUID()
+	if req.ImageUrl == "" {
+		req.ImageUrl = defaultImageURL
+	}
 	product := dal.Product{
 		ProductID:   productID,
 		ProductName: req.ProductName,
@@ -17,7 +21,10 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 		Description: req.Description,
 		Quantity:    req.Quantity,
 		Sold:        0,
-		ImageURL:    defaultImageURL,
+		ImageURL:    req.ImageUrl,
+		CreatedAt:   helper.GetCreatedAt(),
+		UpdatedAt:   "",
+		DeletedAt:   "",
 	}
 	err := s.ProductDAL.CreateProduct(product)
 	if err != nil {
@@ -43,6 +50,9 @@ func (s *Server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb
 		Quantity:    product.Quantity,
 		Sold:        product.Sold,
 		ImageUrl:    product.ImageURL,
+		CreatedAt:   product.CreatedAt,
+		UpdatedAt:   product.UpdatedAt,
+		DeletedAt:   product.DeletedAt,
 	}, nil
 }
 
@@ -61,6 +71,9 @@ func (s *Server) GetAllProducts(ctx context.Context, req *pb.GetAllProductsReque
 			Quantity:    product.Quantity,
 			Sold:        product.Sold,
 			ImageUrl:    product.ImageURL,
+			CreatedAt:   product.CreatedAt,
+			UpdatedAt:   product.UpdatedAt,
+			DeletedAt:   product.DeletedAt,
 		})
 	}
 	return &pb.GetAllProductsResponse{Products: productResponses}, nil
@@ -89,5 +102,8 @@ func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.Updat
 		Quantity:    updatedProduct.Quantity,
 		Sold:        updatedProduct.Sold,
 		ImageUrl:    updatedProduct.ImageURL,
+		CreatedAt:   updatedProduct.CreatedAt,
+		UpdatedAt:   updatedProduct.UpdatedAt,
+		DeletedAt:   updatedProduct.DeletedAt,
 	}, nil
 }

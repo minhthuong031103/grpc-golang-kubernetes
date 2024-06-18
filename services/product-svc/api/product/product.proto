@@ -36,6 +36,9 @@ message Product {
   int32 quantity = 5;
   int32 sold = 6;
   string image_url = 7;
+  string created_at = 8;
+  string updated_at = 9;
+  string deleted_at = 10;
 }
 
 message CreateProductRequest {
