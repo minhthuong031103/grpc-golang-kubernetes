@@ -110,7 +110,7 @@ func (dal *OrderDAL) GetAllOrders() ([]Order, error) {
 }
 
 func (dal *OrderDAL) UpdateOrderStatus(orderId gocql.UUID, status string) error {
-	err := dal.Session.Query(`UPDATE orders SET status = ? updated_at = ?	 WHERE order_id = ?`, status, helper.GetCreatedAt(), orderId).Exec()
+	err := dal.Session.Query(`UPDATE orders SET status = ? updated_at = ?	 WHERE order_id = ?`, status, helper.GetTimeNowInGMT7(), orderId).Exec()
 	if err != nil {
 		log.Printf("Failed to update order status: %v", err)
 		return err

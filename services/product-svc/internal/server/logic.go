@@ -22,7 +22,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 		Quantity:    req.Quantity,
 		Sold:        0,
 		ImageURL:    req.ImageUrl,
-		CreatedAt:   helper.GetCreatedAt(),
+		CreatedAt:   helper.GetTimeNowGMT7(),
 		UpdatedAt:   "",
 		DeletedAt:   "",
 	}

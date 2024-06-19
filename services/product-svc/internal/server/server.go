@@ -26,6 +26,7 @@ func StartGRPCServer(port int, productDAL *dal.ProductDAL) {
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(UnaryInterceptor),
 	)
+
 	pb.RegisterProductServiceServer(grpcServer, &Server{ProductDAL: productDAL})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {

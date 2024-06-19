@@ -2,8 +2,8 @@ package helper
 
 import "time"
 
-// GetCreatedAt returns the current time in GMT+7 formatted as a string
-func GetCreatedAt() string {
+// GetTimeNowGMT7 returns the current time in GMT+7 formatted as a string
+func GetTimeNowGMT7() string {
 	// Get the current local time
 	now := time.Now()
 

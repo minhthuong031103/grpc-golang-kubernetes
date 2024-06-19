@@ -10,6 +10,7 @@ import (
 
 	dal "ordersvc/internal/dal"
 	pb "ordersvc/internal/generated/order"
+	productpb "ordersvc/internal/generated/product"
 	"ordersvc/internal/helper"
 )
 
@@ -23,26 +24,34 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 	dalOrder := dal.Order{
 		OrderId:    gocql.TimeUUID(),
 		CustomerId: customerId,
-		OrderDate:  helper.GetCreatedAt(),
+		OrderDate:  helper.GetTimeNowInGMT7(),
 		Status:     "pending",
 		TotalPrice: 0,
 		Products:   make([]dal.OrderItem, 0),
-		CreatedAt:  helper.GetCreatedAt(),
-		UpdatedAt:  helper.GetCreatedAt(),
+		CreatedAt:  helper.GetTimeNowInGMT7(),
+		UpdatedAt:  helper.GetTimeNowInGMT7(),
 		DeletedAt:  "",
 	}
 
-	for _, item := range req.Items {
-		dalOrder.TotalPrice += float64(item.Quantity) * item.Price
-		productId, err := gocql.ParseUUID(item.ProductId)
+	for i, item := range req.Items {
+		tmpProduct, err := s.ProductClient.GetProduct(ctx, &productpb.GetProductRequest{ProductId: item.ProductId})
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(http.StatusInternalServerError, "Failed to calc product: %v", err)
 		}
+
+		productId, err := gocql.ParseUUID(tmpProduct.ProductId)
+		if err != nil {
+			return nil, status.Errorf(http.StatusInternalServerError, "Failed to parse product id: %v", err)
+		}
+
+		dalOrder.TotalPrice += float64(item.Quantity) * tmpProduct.Price
+		req.Items[i].Price = tmpProduct.Price
+		req.Items[i].ProductName = tmpProduct.ProductName
 		dalOrder.Products = append(dalOrder.Products, dal.OrderItem{
 			ProductId:   productId,
-			ProductName: item.ProductName,
+			ProductName: tmpProduct.ProductName,
 			Quantity:    item.Quantity,
-			Price:       item.Price,
+			Price:       tmpProduct.Price,
 		})
 	}
 
@@ -119,20 +128,20 @@ func (s *Server) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.Ord
 func (s *Server) UpdateOrderStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.UpdateOrderStatusResponse, error) {
 	orderId, err := gocql.ParseUUID(req.OrderId)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(http.StatusInternalServerError, "Failed to parse order id: %v", err)
 	}
 
 	order, err := s.OrderDAL.GetOrder(orderId)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(http.StatusInternalServerError, "Failed to get order: %v", err)
 	}
 
 	order.Status = req.Status
-	order.UpdatedAt = helper.GetCreatedAt()
+	order.UpdatedAt = helper.GetTimeNowInGMT7()
 
 	err = s.OrderDAL.UpdateOrderStatus(orderId, req.Status)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(http.StatusInternalServerError, "Failed to update order status: %v", err)
 	}
 
 	return &pb.UpdateOrderStatusResponse{
