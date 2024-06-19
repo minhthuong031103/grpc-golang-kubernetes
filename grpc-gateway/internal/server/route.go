@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	customerpb "gateway/internal/generated/customer"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +15,9 @@ func (s *HTTPServer) SetRoute() {
 		{Url: "/api/login", Method: http.MethodPost},
 		{Url: "/api/signup", Method: http.MethodPost},
 		{Url: "/api/iam", Method: http.MethodPost},
-	}))
+	},
+		customerpb.NewCustomerServiceClient(s.CustomerConn),
+	))
 
 	// File upload endpoint
 	s.Router.POST("/upload", uploadFileHandler(s.FileUploadConn))

@@ -1,14 +1,17 @@
 package ginmiddleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
+
+	customerpb "gateway/internal/generated/customer"
 
 	"github.com/gin-gonic/gin"
 )
 
 // AuthMiddleware checks the Authorization header for a valid token
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(authclient customerpb.CustomerServiceClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -24,22 +27,18 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Validate the token (this is a placeholder, replace with your own validation logic)
-		if !validateToken(token) {
+		auth, err := authclient.Authorize(context.Background(), &customerpb.Token{
+			Token: token,
+		})
+		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			return
 		}
 
-		// Token is valid, proceed to the next handler
+		c.Set("customer_id", auth.CustomerId)
+		c.Set("email", auth.Email)
 		c.Next()
 	}
-}
-
-// Placeholder function to validate the token
-func validateToken(token string) bool {
-	// Implement your token validation logic here
-	// For example, you could decode a JWT and check its claims, expiration, etc.
-	// This function should return true if the token is valid, false otherwise.
-	return token == "your-valid-token" // Replace with real validation
 }
 
 type NoAuthURL struct {
@@ -48,17 +47,16 @@ type NoAuthURL struct {
 }
 
 // ConditionalAuthMiddleware applies AuthMiddleware conditionally
-func ConditionalAuthMiddleware(noAuthURLs []NoAuthURL) gin.HandlerFunc {
+func ConditionalAuthMiddleware(noAuthURLs []NoAuthURL, authclient customerpb.CustomerServiceClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		for _, u := range noAuthURLs {
 			if c.Request.URL.Path == u.Url && c.Request.Method == u.Method {
-				// Skip auth middleware for these paths
 				c.Next()
 				return
 			}
 		}
 
-		AuthMiddleware()(c)
+		AuthMiddleware(authclient)(c)
 	}
 }
