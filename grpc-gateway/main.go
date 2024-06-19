@@ -43,13 +43,8 @@ func main() {
 	defer orderclient.Disconnect()
 
 	// Set up the HTTP server with integrated gRPC-Gateway and Gin router
-	router := server.SetupRouter(fileuploadclient.GetConnection(), customerclient.GetConnection(), productclient.GetConnection(), orderclient.GetConnection())
+	server := server.NewServer(fileuploadclient.GetConnection(), customerclient.GetConnection(), productclient.GetConnection(), orderclient.GetConnection())
+	server.SetGmux()
+	server.Run(cfg.Server.Port)
 
-	fmt.Println("CUSTOMER SERVICE ADDRESS: ", cfg.CustomerSvc.Address)
-
-	// Start the HTTP server and log any errors encountered
-	log.Printf("API gateway server is running on %d", cfg.Server.Port)
-	if err := router.Run(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {
-		log.Fatalf("gateway server closed abruptly: %v", err)
-	}
 }
