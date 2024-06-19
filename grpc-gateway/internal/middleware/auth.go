@@ -41,3 +41,24 @@ func validateToken(token string) bool {
 	// This function should return true if the token is valid, false otherwise.
 	return token == "your-valid-token" // Replace with real validation
 }
+
+type NoAuthURL struct {
+	Url    string
+	Method string
+}
+
+// ConditionalAuthMiddleware applies AuthMiddleware conditionally
+func ConditionalAuthMiddleware(noAuthURLs []NoAuthURL) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		for _, u := range noAuthURLs {
+			if c.Request.URL.Path == u.Url && c.Request.Method == u.Method {
+				// Skip auth middleware for these paths
+				c.Next()
+				return
+			}
+		}
+
+		AuthMiddleware()(c)
+	}
+}

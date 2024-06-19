@@ -44,7 +44,7 @@ func main() {
 
 	// Set up the HTTP server with integrated gRPC-Gateway and Gin router
 	server := server.NewServer(fileuploadclient.GetConnection(), customerclient.GetConnection(), productclient.GetConnection(), orderclient.GetConnection())
-	server.SetGmux()
+	server.RegisterServiceHandler()
+	server.SetRoute()
 	server.Run(cfg.Server.Port)
-
 }

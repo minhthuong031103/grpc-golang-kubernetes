@@ -5,14 +5,16 @@ import (
 	"log"
 	"net/http"
 
-	ginmiddleware "gateway/middleware"
+	ginmiddleware "gateway/internal/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
 type HTTPServer struct {
 	Router         *gin.Engine
+	Gwmux          *runtime.ServeMux
 	FileUploadConn *grpc.ClientConn
 	CustomerConn   *grpc.ClientConn
 	ProductConn    *grpc.ClientConn
@@ -32,9 +34,11 @@ func NewServer(fileuploadConn *grpc.ClientConn, customerConn *grpc.ClientConn, p
 	router.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+	
 
 	return &HTTPServer{
 		Router:         router,
+		Gwmux:          runtime.NewServeMux(),
 		FileUploadConn: fileuploadConn,
 		CustomerConn:   customerConn,
 		ProductConn:    productConn,
