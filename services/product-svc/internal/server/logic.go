@@ -76,7 +76,10 @@ func (s *Server) GetAllProducts(ctx context.Context, req *pb.GetAllProductsReque
 			DeletedAt:   product.DeletedAt,
 		})
 	}
-	return &pb.GetAllProductsResponse{Products: productResponses}, nil
+	return &pb.GetAllProductsResponse{
+		Products: productResponses,
+		Total:    int32(len(productResponses)),
+	}, nil
 }
 
 func (s *Server) UpdateProductQuantityAndSold(ctx context.Context, req *pb.UpdateProductQuantityAndSoldRequest) (*pb.Product, error) {

@@ -37,6 +37,8 @@ func AuthMiddleware(authclient customerpb.CustomerServiceClient) gin.HandlerFunc
 
 		c.Set("customer_id", auth.CustomerId)
 		c.Set("email", auth.Email)
+		c.Set("role", auth.Role)
+		c.Set("token", token)
 		c.Next()
 	}
 }
@@ -52,6 +54,7 @@ func ConditionalAuthMiddleware(noAuthURLs []NoAuthURL, authclient customerpb.Cus
 
 		for _, u := range noAuthURLs {
 			if c.Request.URL.Path == u.Url && c.Request.Method == u.Method {
+				c.Set("role", "anonymous")
 				c.Next()
 				return
 			}

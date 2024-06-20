@@ -376,6 +376,8 @@ func (m *Authorized) validate(all bool) error {
 
 	// no validation rules for Token
 
+	// no validation rules for Role
+
 	if len(errors) > 0 {
 		return AuthorizedMultiError(errors)
 	}
@@ -452,3 +454,217 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = AuthorizedValidationError{}
+
+// Validate checks the field values on SetRoleRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *SetRoleRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SetRoleRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in SetRoleRequestMultiError,
+// or nil if none found.
+func (m *SetRoleRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SetRoleRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Token
+
+	// no validation rules for AccountId
+
+	// no validation rules for Role
+
+	if len(errors) > 0 {
+		return SetRoleRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SetRoleRequestMultiError is an error wrapping multiple validation errors
+// returned by SetRoleRequest.ValidateAll() if the designated constraints
+// aren't met.
+type SetRoleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SetRoleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SetRoleRequestMultiError) AllErrors() []error { return m }
+
+// SetRoleRequestValidationError is the validation error returned by
+// SetRoleRequest.Validate if the designated constraints aren't met.
+type SetRoleRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SetRoleRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SetRoleRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SetRoleRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SetRoleRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SetRoleRequestValidationError) ErrorName() string { return "SetRoleRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e SetRoleRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSetRoleRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SetRoleRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SetRoleRequestValidationError{}
+
+// Validate checks the field values on SetRoleResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *SetRoleResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SetRoleResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SetRoleResponseMultiError, or nil if none found.
+func (m *SetRoleResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SetRoleResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Success
+
+	// no validation rules for AccountId
+
+	// no validation rules for Role
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return SetRoleResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SetRoleResponseMultiError is an error wrapping multiple validation errors
+// returned by SetRoleResponse.ValidateAll() if the designated constraints
+// aren't met.
+type SetRoleResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SetRoleResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SetRoleResponseMultiError) AllErrors() []error { return m }
+
+// SetRoleResponseValidationError is the validation error returned by
+// SetRoleResponse.Validate if the designated constraints aren't met.
+type SetRoleResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SetRoleResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SetRoleResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SetRoleResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SetRoleResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SetRoleResponseValidationError) ErrorName() string { return "SetRoleResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e SetRoleResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSetRoleResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SetRoleResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SetRoleResponseValidationError{}
