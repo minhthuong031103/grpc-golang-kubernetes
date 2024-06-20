@@ -67,6 +67,7 @@ message GetAllOrdersRequest {}
 // GetAllOrdersResponse is the response format for retrieving all orders.
 message GetAllOrdersResponse {
   repeated Order orders = 1;
+  int32 total = 2;
 }
 
 // UpdateOrderStatusRequest is the request format for updating the status of an order.

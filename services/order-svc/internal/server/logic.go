@@ -91,7 +91,9 @@ func (s *Server) GetAllOrders(ctx context.Context, req *pb.GetAllOrdersRequest) 
 			OrderDate:  order.OrderDate,
 		})
 	}
-	return &pb.GetAllOrdersResponse{Orders: orders}, nil
+	return &pb.GetAllOrdersResponse{Orders: orders,
+		Total: int32(len(orders)),
+	}, nil
 }
 
 func (s *Server) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.Order, error) {

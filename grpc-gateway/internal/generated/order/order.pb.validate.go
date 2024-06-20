@@ -686,6 +686,8 @@ func (m *GetAllOrdersResponse) validate(all bool) error {
 
 	}
 
+	// no validation rules for Total
+
 	if len(errors) > 0 {
 		return GetAllOrdersResponseMultiError(errors)
 	}

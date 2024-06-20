@@ -48,14 +48,11 @@ func (s *HTTPServer) SetRoute() {
 				{Method: http.MethodGet, Path: "/products"},
 				{Method: http.MethodGet, Path: "/product/*"},
 				{Method: http.MethodPost, Path: "/orders"},
-				{Method: http.MethodGet, Path: "/orders"},
-				{Method: http.MethodGet, Path: "/orders"},
+				{Method: http.MethodGet, Path: "/orders/me"},
 			}
 
 			isAllowed := false
 			for _, endpoint := range allowEndpoints {
-				fmt.Println(c.Request.Method, endpoint.Method, c.Request.URL.Path, endpoint.Path)
-				fmt.Println(endpoint.Path[:len(endpoint.Path)-2])
 				if c.Request.Method == endpoint.Method && (c.Request.URL.Path == endpoint.Path || (strings.HasSuffix(endpoint.Path, "/*") && strings.HasPrefix(c.Request.URL.Path, endpoint.Path[:len(endpoint.Path)-2]))) {
 					isAllowed = true
 					break

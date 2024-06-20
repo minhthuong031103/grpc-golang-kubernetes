@@ -54,6 +54,22 @@ func (dal *OrderDAL) CreateOrder(order Order) error {
 		return err
 	}
 
+	// Update the stock of the products
+	for _, item := range order.Products {
+		// update quantity of the product
+		err = dal.Session.Query(`UPDATE products SET quantity = quantity - ? WHERE product_id = ?`, item.Quantity, item.ProductId).Exec()
+		if err != nil {
+			log.Printf("Failed to update product stock: %v", err)
+			return err
+		}
+		// update sold of the product
+		err = dal.Session.Query(`UPDATE products SET sold = sold + ? WHERE product_id = ?`, item.Quantity, item.ProductId).Exec()
+		if err != nil {
+			log.Printf("Failed to update product sold: %v", err)
+			return err
+		}
+	}
+
 	return nil
 }
 
