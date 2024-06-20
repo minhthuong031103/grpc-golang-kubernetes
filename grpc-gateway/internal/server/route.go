@@ -48,7 +48,7 @@ func (s *HTTPServer) SetRoute() {
 				{Method: http.MethodGet, Path: "/products"},
 				{Method: http.MethodGet, Path: "/product/*"},
 				{Method: http.MethodPost, Path: "/orders"},
-				{Method: http.MethodGet, Path: "/orders/me"},
+				{Method: http.MethodGet, Path: "/orders"},
 			}
 
 			isAllowed := false
