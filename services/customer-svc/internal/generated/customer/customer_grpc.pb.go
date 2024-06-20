@@ -22,6 +22,7 @@ const (
 	CustomerService_Login_FullMethodName     = "/CustomerService/Login"
 	CustomerService_SignUp_FullMethodName    = "/CustomerService/SignUp"
 	CustomerService_Authorize_FullMethodName = "/CustomerService/Authorize"
+	CustomerService_SetRole_FullMethodName   = "/CustomerService/SetRole"
 )
 
 // CustomerServiceClient is the client API for CustomerService service.
@@ -31,6 +32,7 @@ type CustomerServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Authorized, error)
 	Authorize(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Authorized, error)
+	SetRole(ctx context.Context, in *SetRoleRequest, opts ...grpc.CallOption) (*SetRoleResponse, error)
 }
 
 type customerServiceClient struct {
@@ -71,6 +73,16 @@ func (c *customerServiceClient) Authorize(ctx context.Context, in *Token, opts .
 	return out, nil
 }
 
+func (c *customerServiceClient) SetRole(ctx context.Context, in *SetRoleRequest, opts ...grpc.CallOption) (*SetRoleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetRoleResponse)
+	err := c.cc.Invoke(ctx, CustomerService_SetRole_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CustomerServiceServer is the server API for CustomerService service.
 // All implementations must embed UnimplementedCustomerServiceServer
 // for forward compatibility
@@ -78,6 +90,7 @@ type CustomerServiceServer interface {
 	Login(context.Context, *LoginRequest) (*Token, error)
 	SignUp(context.Context, *SignUpRequest) (*Authorized, error)
 	Authorize(context.Context, *Token) (*Authorized, error)
+	SetRole(context.Context, *SetRoleRequest) (*SetRoleResponse, error)
 	mustEmbedUnimplementedCustomerServiceServer()
 }
 
@@ -93,6 +106,9 @@ func (UnimplementedCustomerServiceServer) SignUp(context.Context, *SignUpRequest
 }
 func (UnimplementedCustomerServiceServer) Authorize(context.Context, *Token) (*Authorized, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorize not implemented")
+}
+func (UnimplementedCustomerServiceServer) SetRole(context.Context, *SetRoleRequest) (*SetRoleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRole not implemented")
 }
 func (UnimplementedCustomerServiceServer) mustEmbedUnimplementedCustomerServiceServer() {}
 
@@ -161,6 +177,24 @@ func _CustomerService_Authorize_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CustomerService_SetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustomerServiceServer).SetRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CustomerService_SetRole_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustomerServiceServer).SetRole(ctx, req.(*SetRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CustomerService_ServiceDesc is the grpc.ServiceDesc for CustomerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -179,6 +213,10 @@ var CustomerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authorize",
 			Handler:    _CustomerService_Authorize_Handler,
+		},
+		{
+			MethodName: "SetRole",
+			Handler:    _CustomerService_SetRole_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

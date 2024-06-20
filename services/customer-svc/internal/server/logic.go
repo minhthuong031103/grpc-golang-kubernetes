@@ -105,6 +105,7 @@ func (s *Server) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb.Authori
 		Name:       customer.Name,
 		Email:      customer.Email,
 		Token:      token,
+		Role:       customer.Role,
 	}, nil
 }
 
@@ -139,5 +140,36 @@ func (s *Server) Authorize(ctx context.Context, req *pb.Token) (*pb.Authorized, 
 		Name:       customer.Name,
 		Email:      customer.Email,
 		Token:      req.Token,
+		Role:       customer.Role,
+	}, nil
+}
+
+func (s *Server) SetRole(ctx context.Context, req *pb.SetRoleRequest) (*pb.SetRoleResponse, error) {
+	log.Println("Role update request received")
+
+	// Get the requestor's role
+	requestor, err := s.CustomerDAL.GetCustomerByToken(req.Token)
+	if err != nil {
+		log.Println("Failed to retrieve requestor:", err)
+		return nil, status.Errorf(codes.Internal, "Failed to retrieve requestor: %v", err)
+	}
+	if requestor.Role != "admin" {
+		log.Println("Unauthorized requestor")
+		return nil, status.Error(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	// Update the role
+	err = s.CustomerDAL.UpdateRole(req.AccountId, req.Role)
+	if err != nil {
+		log.Println("Failed to update role:", err)
+		return nil, status.Errorf(codes.Internal, "Failed to update role: %v", err)
+	}
+
+	// Return a successful response
+	return &pb.SetRoleResponse{
+		Success:   true,
+		AccountId: req.AccountId,
+		Role:      req.Role,
+		Message:   "Role updated successfully",
 	}, nil
 }

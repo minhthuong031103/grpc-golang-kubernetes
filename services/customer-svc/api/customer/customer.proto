@@ -24,6 +24,13 @@ service CustomerService {
       body: "*",
     };
   }
+
+  rpc SetRole(SetRoleRequest) returns (SetRoleResponse) {
+    option (google.api.http) = {
+      post: "/auth/setrole",
+      body: "*",
+    };
+  }
 }
 
 message Token {
@@ -47,4 +54,17 @@ message Authorized {
   string name = 3 [json_name="name"];
   string email = 4 [json_name="email"];
   string token = 5 [json_name="token"];
+  string role = 6 [json_name="role"];
+}
+
+message SetRoleRequest {
+  string token = 1 [json_name="token"];
+  string account_id = 2 [json_name="account_id"];
+  string role = 3 [json_name="role"];
+}
+message SetRoleResponse {
+  bool success = 1 [json_name="success"];
+  string account_id = 2 [json_name="account_id"];
+  string role = 3 [json_name="role"];
+  string message = 4 [json_name="message"];
 }
