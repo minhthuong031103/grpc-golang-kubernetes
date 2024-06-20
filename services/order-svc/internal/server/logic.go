@@ -44,6 +44,10 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 			return nil, status.Errorf(http.StatusInternalServerError, "Failed to parse product id: %v", err)
 		}
 
+		if tmpProduct.Quantity < item.Quantity {
+			return nil, status.Errorf(http.StatusBadRequest, "Not enough stock for product %s", tmpProduct.ProductName)
+		}
+
 		dalOrder.TotalPrice += float64(item.Quantity) * tmpProduct.Price
 		req.Items[i].Price = tmpProduct.Price
 		req.Items[i].ProductName = tmpProduct.ProductName
