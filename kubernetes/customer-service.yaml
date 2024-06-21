@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          # image: minhthuong031103/customer-service:latest
+          image: bvquoc/customer:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 50050

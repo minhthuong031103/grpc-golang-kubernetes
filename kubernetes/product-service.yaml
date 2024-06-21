@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          # image: minhthuong031103/product-service:latest
+          image: bvquoc/product:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 50052

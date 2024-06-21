@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fileupload-service
-          # image: minhthuong031103/fileupload-service:latest
+          image: bvquoc/fileupload:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 50054
