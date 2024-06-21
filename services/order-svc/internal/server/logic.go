@@ -71,7 +71,11 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 	}
 
 	dalOrder.Status = "completed"
-	s.OrderDAL.UpdateOrderStatus(dalOrder.OrderId, dalOrder.Status)
+	err = s.OrderDAL.UpdateOrderStatus(dalOrder.OrderId, dalOrder.Status)
+	if err != nil {
+		// return nil, status.Errorf(http.StatusInternalServerError, "Failed to update order status: %v", err)
+		dalOrder.Status = "pending"
+	}
 
 	return &pb.Order{
 		OrderId:    dalOrder.OrderId.String(),
