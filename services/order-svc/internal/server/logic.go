@@ -48,6 +48,12 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 			return nil, status.Errorf(http.StatusBadRequest, "Not enough stock for product %s", tmpProduct.ProductName)
 		}
 
+		s.ProductClient.UpdateProductQuantityAndSold(ctx, &productpb.UpdateProductQuantityAndSoldRequest{
+			ProductId: productId.String(),
+			Quantity:  tmpProduct.Quantity - item.Quantity,
+			Sold:      tmpProduct.Sold + item.Quantity,
+		})
+
 		dalOrder.TotalPrice += float64(item.Quantity) * tmpProduct.Price
 		req.Items[i].Price = tmpProduct.Price
 		req.Items[i].ProductName = tmpProduct.ProductName
