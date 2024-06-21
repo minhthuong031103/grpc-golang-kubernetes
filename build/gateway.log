@@ -1,0 +1,30 @@
+GATEWAY is trying serve on port: 8080
+2024/06/21 13:37:27 Connected to CUSTOMER service
+2024/06/21 13:37:27 Connected to PRODUCT service
+2024/06/21 13:37:27 Connected to ORDER service
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> gateway/internal/server.NewServer.func1 (4 handlers)
+[GIN-debug] POST   /upload                   --> gateway/internal/server.(*HTTPServer).SetRoute.uploadFileHandler.func4 (5 handlers)
+[GIN-debug] GET    /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] POST   /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] PUT    /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] PATCH  /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] HEAD   /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] OPTIONS /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] DELETE /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] CONNECT /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+[GIN-debug] TRACE  /api/*any                 --> gateway/internal/server.(*HTTPServer).SetRoute.WrapH.func5 (7 handlers)
+2024/06/21 13:37:27 API gateway server is running on 8080
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN] 2024/06/21 - 13:37:43 | 200 |       2.333µs |             ::1 | GET      "/health"
+[GIN] 2024/06/21 - 13:38:19 | 503 |    4.232083ms |             ::1 | POST     "/api/login"
+[GIN] 2024/06/21 - 13:38:35 | 503 |     175.458µs |             ::1 | POST     "/api/login"
+[GIN] 2024/06/21 - 13:38:36 | 503 |     253.708µs |             ::1 | POST     "/api/login"
+[GIN] 2024/06/21 - 13:40:41 | 503 |     274.333µs |             ::1 | POST     "/api/login"

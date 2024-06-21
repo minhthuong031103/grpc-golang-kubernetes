@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: minhthuong031103/order-service:latest
+          # image: minhthuong031103/order-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 50051
