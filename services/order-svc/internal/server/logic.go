@@ -70,6 +70,8 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 		return nil, err
 	}
 
+	s.OrderDAL.UpdateOrderStatus(dalOrder.OrderId, "completed")
+
 	return &pb.Order{
 		OrderId:    dalOrder.OrderId.String(),
 		CustomerId: dalOrder.CustomerId.String(),
